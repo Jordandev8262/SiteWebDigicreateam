@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Contrôle - DigiCreaTeam</title>
+    <link rel="shortcut icon" href="favicon.png">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .admin-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #14B789;
+            text-decoration: none;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .admin-nav a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .admin-nav a:hover {
+            color: #14B789;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .dashboard-container {
+            padding: 2rem 0;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .dashboard-subtitle {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #14B789, #667eea);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon.visitors { background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); }
+        .stat-icon.clicks { background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); }
+        .stat-icon.pages { background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%); }
+        .stat-icon.time { background: linear-gradient(45deg, #43e97b 0%, #38f9d7 100%); }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-subtitle {
+            font-size: 0.9rem;
+            color: #14B789;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #28a745;
+        }
+
+        .stat-trend.down {
+            color: #dc3545;
+        }
+
+        .stat-trend i {
+            font-size: 0.8rem;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+
+        .form-stats {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-summary {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+        }
+
+        .form-stat-item {
+            text-align: center;
+        }
+
+        .form-stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #14B789;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-stat-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .form-activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .form-activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1rem;
+            color: white;
+            background: #f093fb;
+        }
+
+        .form-activity-content {
+            flex: 1;
+        }
+
+        .form-activity-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+
+        .form-activity-time {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .link-stats {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .link-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #14B789;
+        }
+
+        .link-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #14B789, #667eea);
+        }
+
+        .link-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+            color: white;
+            background: linear-gradient(135deg, #14B789, #667eea);
+            flex-shrink: 0;
+        }
+
+        .link-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .link-url {
+            font-weight: 600;
+            color: #2c3e50;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.25rem;
+            word-break: break-all;
+            transition: color 0.3s ease;
+        }
+
+        .link-url:hover {
+            color: #14B789;
+        }
+
+        .link-description {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+        }
+
+        .link-stats {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .link-count {
+            background: linear-gradient(135deg, #14B789, #667eea);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .link-rank {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .link-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+            color: #28a745;
+        }
+
+        .link-trend.down {
+            color: #dc3545;
+        }
+
+        .link-trend i {
+            font-size: 0.7rem;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #14B789, #667eea);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(20, 183, 137, 0.3);
+        }
+
+        /* Animation pour les éléments de lien */
+        .link-item {
+            animation: slideInUp 0.6s ease forwards;
+        }
+
+        .link-item:nth-child(1) { animation-delay: 0.1s; }
+        .link-item:nth-child(2) { animation-delay: 0.2s; }
+        .link-item:nth-child(3) { animation-delay: 0.3s; }
+        .link-item:nth-child(4) { animation-delay: 0.4s; }
+        .link-item:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Styles pour les états vides */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ddd;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state small {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-title {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .link-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .link-stats {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .link-content {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Admin -->
+    <header class="admin-header">
+        <div class="container">
+            <nav class="admin-navbar">
+                <a href="index.html" class="admin-brand">
+                    <i class="bi bi-shield-check"></i> DigiCreaTeam Admin
+                </a>
+                <div class="admin-nav">
+                    <a href="index.html">
+                        <i class="bi bi-house"></i> Site Web
+                    </a>
+                    <a href="Ourteams.html">
+                        <i class="bi bi-people"></i> Équipe
+                    </a>
+                    <a href="Boutique.html">
+                        <i class="bi bi-shop"></i> Boutique
+                    </a>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="bi bi-box-arrow-right"></i> Déconnexion
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+        <div class="container">
+            <h1 class="dashboard-title">Tableau de Contrôle</h1>
+            <p class="dashboard-subtitle">Gestion et suivi de votre site web DigiCreaTeam</p>
+
+            <button class="refresh-btn" onclick="refreshData()">
+                <i class="bi bi-arrow-clockwise"></i> Actualiser les données
+            </button>
+
+            <!-- Statistiques principales -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon visitors">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stat-number" id="totalVisitors">0</div>
+                    <div class="stat-label">Visiteurs Totaux</div>
+                    <div class="stat-subtitle" id="visitorsToday">+0 aujourd'hui</div>
+                    <div class="stat-trend" id="visitorsTrend">
+                        <i class="bi bi-arrow-up"></i>
+                        <span>+0%</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon clicks">
+                        <i class="bi bi-mouse"></i>
+                    </div>
+                    <div class="stat-number" id="totalClicks">0</div>
+                    <div class="stat-label">Clics Totaux</div>
+                    <div class="stat-subtitle" id="clicksToday">+0 aujourd'hui</div>
+                    <div class="stat-trend" id="clicksTrend">
+                        <i class="bi bi-arrow-up"></i>
+                        <span>+0%</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon pages">
+                        <i class="bi bi-file-text"></i>
+                    </div>
+                    <div class="stat-number" id="totalPages">0</div>
+                    <div class="stat-label">Pages Vues</div>
+                    <div class="stat-subtitle" id="pagesToday">+0 aujourd'hui</div>
+                    <div class="stat-trend" id="pagesTrend">
+                        <i class="bi bi-arrow-up"></i>
+                        <span>+0%</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon time">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <div class="stat-number" id="avgTime">0s</div>
+                    <div class="stat-label">Temps Moyen</div>
+                    <div class="stat-subtitle" id="timeToday">+0s aujourd'hui</div>
+                    <div class="stat-trend" id="timeTrend">
+                        <i class="bi bi-arrow-up"></i>
+                        <span>+0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graphiques -->
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-container">
+                        <h3 class="chart-title">Visiteurs par Jour</h3>
+                        <canvas id="visitorsChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-container">
+                        <h3 class="chart-title">Formulaires Soumis par Jour</h3>
+                        <canvas id="formsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-container">
+                        <h3 class="chart-title">Pages Populaires</h3>
+                        <canvas id="pagesChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-container">
+                        <h3 class="chart-title">Types de Formulaires</h3>
+                        <canvas id="formTypesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="form-stats">
+                        <h3 class="chart-title">Formulaires Soumis</h3>
+                        <div class="form-summary">
+                            <div class="form-stat-item">
+                                <div class="form-stat-number" id="totalForms">0</div>
+                                <div class="form-stat-label">Total Formulaires</div>
+                            </div>
+                            <div class="form-stat-item">
+                                <div class="form-stat-number" id="todayForms">0</div>
+                                <div class="form-stat-label">Aujourd'hui</div>
+                            </div>
+                        </div>
+                        <div id="formActivity">
+                            <!-- Activité des formulaires générée par JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="link-stats">
+                        <h3 class="chart-title">Liens les Plus Clicqués</h3>
+                        <div id="linkStats">
+                            <!-- Statistiques des liens générées par JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script>
+        // Vérifier l'authentification
+        function checkAuth() {
+            const isAuthenticated = sessionStorage.getItem('adminAuthenticated');
+            if (!isAuthenticated) {
+                window.location.href = 'admin-login.html';
+                return false;
+            }
+            return true;
+        }
+
+        // Déconnexion
+        function logout() {
+            sessionStorage.removeItem('adminAuthenticated');
+            sessionStorage.removeItem('adminLoginTime');
+            window.location.href = 'admin-login.html';
+        }
+
+        // Données simulées pour le dashboard
+        let dashboardData = {
+            totalVisitors: 0,
+            totalClicks: 0,
+            totalPages: 0,
+            avgTime: 0,
+            visitorsData: [],
+            pagesData: [],
+            recentActivity: [],
+            linkStats: []
+        };
+
+        // Charger les données depuis le localStorage ou initialiser
+        function loadData() {
+            const savedData = localStorage.getItem('digicreateam_analytics');
+            if (savedData) {
+                dashboardData = JSON.parse(savedData);
+            } else {
+                // Données par défaut
+                dashboardData = {
+                    totalVisitors: 1247,
+                    totalClicks: 3892,
+                    totalPages: 5678,
+                    avgTime: 145,
+                    visitorsData: [45, 52, 38, 67, 89, 76, 92, 85, 78, 95, 88, 102],
+                    pagesData: [
+                        { name: 'Accueil', views: 450 },
+                        { name: 'Services', views: 320 },
+                        { name: 'Équipe', views: 280 },
+                        { name: 'Boutique', views: 190 },
+                        { name: 'Contact', views: 150 }
+                    ],
+                    recentActivity: [
+                        { type: 'visit', title: 'Nouveau visiteur sur la page Accueil', time: 'Il y a 2 minutes' },
+                        { type: 'click', title: 'Clic sur le lien Services', time: 'Il y a 5 minutes' },
+                        { type: 'form', title: 'Formulaire de contact soumis', time: 'Il y a 8 minutes' },
+                        { type: 'visit', title: 'Visiteur sur la page Boutique', time: 'Il y a 12 minutes' },
+                        { type: 'click', title: 'Clic sur le lien Équipe', time: 'Il y a 15 minutes' }
+                    ],
+                    linkStats: [
+                        { url: 'index.html', clicks: 245 },
+                        { url: 'Ourteams.html', clicks: 189 },
+                        { url: 'Boutique.html', clicks: 156 },
+                        { url: '#section_3', clicks: 134 },
+                        { url: '#section_5', clicks: 98 }
+                    ]
+                };
+                saveData();
+            }
+        }
+
+        // Sauvegarder les données
+        function saveData() {
+            localStorage.setItem('digicreateam_analytics', JSON.stringify(dashboardData));
+        }
+
+        // Actualiser les données
+        function refreshData() {
+            // Simuler de nouvelles données
+            dashboardData.totalVisitors += Math.floor(Math.random() * 10);
+            dashboardData.totalClicks += Math.floor(Math.random() * 20);
+            dashboardData.totalPages += Math.floor(Math.random() * 15);
+            
+            // Ajouter une nouvelle activité
+            const activities = [
+                { type: 'visit', title: 'Nouveau visiteur sur la page Accueil', time: 'À l\'instant' },
+                { type: 'click', title: 'Clic sur un lien de navigation', time: 'À l\'instant' },
+                { type: 'form', title: 'Formulaire de contact soumis', time: 'À l\'instant' }
+            ];
+            
+            const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+            dashboardData.recentActivity.unshift(randomActivity);
+            if (dashboardData.recentActivity.length > 10) {
+                dashboardData.recentActivity.pop();
+            }
+            
+            saveData();
+            updateDashboard();
+        }
+
+        // Mettre à jour le dashboard
+        function updateDashboard() {
+            // Statistiques principales
+            this.updateMainStats(dashboardData);
+
+
+            // Statistiques des formulaires
+            this.updateFormStats(dashboardData);
+
+            // Statistiques des liens
+            this.updateLinkStats(dashboardData);
+
+            // Mettre à jour les graphiques
+            updateCharts();
+        }
+
+
+        // Mettre à jour les statistiques principales avec suivi quotidien
+        function updateMainStats(data) {
+            const today = new Date().toDateString();
+            
+            // Calculer les statistiques d'aujourd'hui
+            const todayVisitors = getTodayCount(data.pageViews, 'timestamp');
+            const todayClicks = getTodayCount(data.linkStats, 'timestamp');
+            const todayPages = getTodayCount(data.pageViews, 'timestamp');
+            const todayTime = getTodayTime(data.timeOnPage);
+            
+            // Calculer les tendances (comparaison avec hier)
+            const yesterdayVisitors = getYesterdayCount(data.pageViews, 'timestamp');
+            const yesterdayClicks = getYesterdayCount(data.linkStats, 'timestamp');
+            const yesterdayPages = getYesterdayCount(data.pageViews, 'timestamp');
+            const yesterdayTime = getYesterdayTime(data.timeOnPage);
+            
+            // Mettre à jour les totaux
+            document.getElementById('totalVisitors').textContent = data.totalVisitors.toLocaleString();
+            document.getElementById('totalClicks').textContent = data.totalClicks.toLocaleString();
+            document.getElementById('totalPages').textContent = data.totalPages.toLocaleString();
+            document.getElementById('avgTime').textContent = data.avgTime + 's';
+            
+            // Mettre à jour les statistiques d'aujourd'hui
+            document.getElementById('visitorsToday').textContent = `+${todayVisitors} aujourd'hui`;
+            document.getElementById('clicksToday').textContent = `+${todayClicks} aujourd'hui`;
+            document.getElementById('pagesToday').textContent = `+${todayPages} aujourd'hui`;
+            document.getElementById('timeToday').textContent = `+${todayTime}s aujourd'hui`;
+            
+            // Mettre à jour les tendances
+            updateTrend('visitorsTrend', todayVisitors, yesterdayVisitors);
+            updateTrend('clicksTrend', todayClicks, yesterdayClicks);
+            updateTrend('pagesTrend', todayPages, yesterdayPages);
+            updateTrend('timeTrend', todayTime, yesterdayTime);
+        }
+
+        // Obtenir le nombre d'éléments d'aujourd'hui
+        function getTodayCount(items, dateField) {
+            if (!items) return 0;
+            const today = new Date().toDateString();
+            return items.filter(item => {
+                const itemDate = new Date(item[dateField]).toDateString();
+                return itemDate === today;
+            }).length;
+        }
+
+        // Obtenir le nombre d'éléments d'hier
+        function getYesterdayCount(items, dateField) {
+            if (!items) return 0;
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayString = yesterday.toDateString();
+            return items.filter(item => {
+                const itemDate = new Date(item[dateField]).toDateString();
+                return itemDate === yesterdayString;
+            }).length;
+        }
+
+        // Obtenir le temps d'aujourd'hui
+        function getTodayTime(timeOnPage) {
+            if (!timeOnPage) return 0;
+            const today = new Date().toDateString();
+            const todayEntries = timeOnPage.filter(entry => {
+                const entryDate = new Date(entry.timestamp).toDateString();
+                return entryDate === today;
+            });
+            return todayEntries.reduce((sum, entry) => sum + entry.time, 0);
+        }
+
+        // Obtenir le temps d'hier
+        function getYesterdayTime(timeOnPage) {
+            if (!timeOnPage) return 0;
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayString = yesterday.toDateString();
+            const yesterdayEntries = timeOnPage.filter(entry => {
+                const entryDate = new Date(entry.timestamp).toDateString();
+                return entryDate === yesterdayString;
+            });
+            return yesterdayEntries.reduce((sum, entry) => sum + entry.time, 0);
+        }
+
+        // Mettre à jour les tendances
+        function updateTrend(elementId, today, yesterday) {
+            const trendElement = document.getElementById(elementId);
+            const trendIcon = trendElement.querySelector('i');
+            const trendText = trendElement.querySelector('span');
+            
+            if (yesterday === 0) {
+                trendText.textContent = '+100%';
+                trendIcon.className = 'bi bi-arrow-up';
+                trendElement.className = 'stat-trend';
+            } else {
+                const percentage = Math.round(((today - yesterday) / yesterday) * 100);
+                if (percentage >= 0) {
+                    trendText.textContent = `+${percentage}%`;
+                    trendIcon.className = 'bi bi-arrow-up';
+                    trendElement.className = 'stat-trend';
+                } else {
+                    trendText.textContent = `${percentage}%`;
+                    trendIcon.className = 'bi bi-arrow-down';
+                    trendElement.className = 'stat-trend down';
+                }
+            }
+        }
+
+        // Mettre à jour les statistiques des formulaires
+        function updateFormStats(data) {
+            // Calculer le total des formulaires
+            const totalForms = data.formSubmissions ? data.formSubmissions.length : 0;
+            document.getElementById('totalForms').textContent = totalForms;
+
+            // Calculer les formulaires d'aujourd'hui
+            const today = new Date().toDateString();
+            const todayForms = data.formSubmissions ? data.formSubmissions.filter(form => {
+                const formDate = new Date(form.timestamp).toDateString();
+                return formDate === today;
+            }).length : 0;
+            document.getElementById('todayForms').textContent = todayForms;
+
+            // Afficher l'activité des formulaires
+            const formActivityContainer = document.getElementById('formActivity');
+            formActivityContainer.innerHTML = '';
+
+            if (data.formSubmissions && data.formSubmissions.length > 0) {
+                // Prendre les 5 derniers formulaires
+                const recentForms = data.formSubmissions.slice(0, 5);
+                
+                recentForms.forEach(form => {
+                    const formDiv = document.createElement('div');
+                    formDiv.className = 'form-activity-item';
+                    
+                    const formTime = new Date(form.timestamp).toLocaleString('fr-FR', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        day: '2-digit',
+                        month: '2-digit'
+                    });
+                    
+                    const formName = form.formId !== 'sans-id' ? form.formId : 
+                                    form.formClass !== 'sans-classe' ? form.formClass : 
+                                    'Formulaire de contact';
+                    
+                    formDiv.innerHTML = `
+                        <div class="form-activity-icon">
+                            <i class="bi bi-form"></i>
+                        </div>
+                        <div class="form-activity-content">
+                            <div class="form-activity-title">${formName}</div>
+                            <div class="form-activity-time">${formTime} • ${form.fieldCount || 0} champs</div>
+                        </div>
+                    `;
+                    formActivityContainer.appendChild(formDiv);
+                });
+            } else {
+                formActivityContainer.innerHTML = `
+                    <div class="text-center text-muted py-3">
+                        <i class="bi bi-inbox" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Aucun formulaire soumis</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Mettre à jour les statistiques des liens
+        function updateLinkStats(data) {
+            const linkContainer = document.getElementById('linkStats');
+            linkContainer.innerHTML = '';
+
+            if (data.linkStats && data.linkStats.length > 0) {
+                // Trier les liens par nombre de clics
+                const sortedLinks = data.linkStats.sort((a, b) => b.clicks - a.clicks);
+                
+                sortedLinks.forEach((link, index) => {
+                    const linkDiv = document.createElement('div');
+                    linkDiv.className = 'link-item';
+                    
+                    // Déterminer l'icône selon le type de lien
+                    const getLinkIcon = (url) => {
+                        if (url.includes('index.html')) return 'bi-house';
+                        if (url.includes('Ourteams.html')) return 'bi-people';
+                        if (url.includes('Boutique.html')) return 'bi-shop';
+                        if (url.includes('admin-login.html')) return 'bi-shield-lock';
+                        if (url.includes('#section_')) return 'bi-arrow-down-circle';
+                        return 'bi-link-45deg';
+                    };
+                    
+                    // Déterminer la description du lien
+                    const getLinkDescription = (url) => {
+                        if (url.includes('index.html')) return 'Page d\'accueil principale';
+                        if (url.includes('Ourteams.html')) return 'Présentation de l\'équipe';
+                        if (url.includes('Boutique.html')) return 'Boutique en ligne';
+                        if (url.includes('admin-login.html')) return 'Connexion administrateur';
+                        if (url.includes('#section_2')) return 'Section À propos';
+                        if (url.includes('#section_3')) return 'Section Services';
+                        if (url.includes('#section_4')) return 'Section Projets';
+                        if (url.includes('#section_5')) return 'Section Contact';
+                        return 'Lien de navigation';
+                    };
+                    
+                    // Calculer la tendance (simulée)
+                    const trend = Math.random() > 0.5 ? 'up' : 'down';
+                    const trendValue = Math.floor(Math.random() * 20) + 1;
+                    
+                    // Déterminer le rang
+                    const rank = index + 1;
+                    const rankText = rank <= 3 ? `#${rank}` : `#${rank}`;
+                    
+                    linkDiv.innerHTML = `
+                        <div class="link-icon">
+                            <i class="${getLinkIcon(link.url)}"></i>
+                        </div>
+                        <div class="link-content">
+                            <a href="${link.url}" class="link-url" target="_blank">${link.url}</a>
+                            <div class="link-description">${getLinkDescription(link.url)}</div>
+                        </div>
+                        <div class="link-stats">
+                            <span class="link-rank">${rankText}</span>
+                            <span class="link-count">${link.clicks}</span>
+                            <div class="link-trend ${trend}">
+                                <i class="bi bi-arrow-${trend === 'up' ? 'up' : 'down'}"></i>
+                                ${trendValue}%
+                            </div>
+                        </div>
+                    `;
+                    linkContainer.appendChild(linkDiv);
+                });
+            } else {
+                linkContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-link-45deg"></i>
+                        <p>Aucun lien cliqué</p>
+                        <small>Les statistiques apparaîtront après les premiers clics</small>
+                    </div>
+                `;
+            }
+        }
+
+        // Mettre à jour les graphiques
+        function updateCharts() {
+            // Graphique des visiteurs
+            const visitorsCtx = document.getElementById('visitorsChart').getContext('2d');
+            new Chart(visitorsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
+                    datasets: [{
+                        label: 'Visiteurs',
+                        data: dashboardData.visitorsData,
+                        borderColor: '#14B789',
+                        backgroundColor: 'rgba(20, 183, 137, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Graphique des pages
+            const pagesCtx = document.getElementById('pagesChart').getContext('2d');
+            new Chart(pagesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: dashboardData.pagesData.map(page => page.name),
+                    datasets: [{
+                        data: dashboardData.pagesData.map(page => page.views),
+                        backgroundColor: [
+                            '#14B789',
+                            '#667eea',
+                            '#f093fb',
+                            '#4facfe',
+                            '#43e97b'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Graphique des formulaires par jour
+        function createFormsChart() {
+            const formsCtx = document.getElementById('formsChart').getContext('2d');
+            new Chart(formsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+                    datasets: [{
+                        label: 'Formulaires Soumis',
+                        data: [2, 4, 3, 6, 5, 8, 4],
+                        backgroundColor: 'rgba(240, 147, 251, 0.8)',
+                        borderColor: '#f093fb',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Graphique des types de formulaires
+        function createFormTypesChart() {
+            const formTypesCtx = document.getElementById('formTypesChart').getContext('2d');
+            new Chart(formTypesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Contact', 'Inscription', 'Newsletter', 'Support'],
+                    datasets: [{
+                        data: [45, 25, 20, 10],
+                        backgroundColor: [
+                            '#f093fb',
+                            '#667eea',
+                            '#4facfe',
+                            '#43e97b'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            if (checkAuth()) {
+                loadData();
+                updateDashboard();
+                
+                // Créer les graphiques des formulaires
+                createFormsChart();
+                createFormTypesChart();
+                
+                // Actualiser automatiquement toutes les 30 secondes
+                setInterval(refreshData, 30000);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -16,6 +16,454 @@
         <link href="css/bootstrap-icons.css" rel="stylesheet">
         <link href="css/magnific-popup.css" rel="stylesheet">
         <link href="css/digicreateam.css" rel="stylesheet">
+        
+        <!-- Styles pour le Chatbot IA Amélioré -->
+        <style>
+            #chatbot-container {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 1000;
+                font-family: 'DM Sans', sans-serif;
+            }
+
+            .chatbot-toggle {
+                width: 65px;
+                height: 65px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                color: white;
+                font-size: 28px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .chatbot-toggle::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                transition: left 0.5s;
+            }
+
+            .chatbot-toggle:hover::before {
+                left: 100%;
+            }
+
+            .chatbot-toggle:hover {
+                transform: scale(1.15) rotate(5deg);
+                box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+            }
+
+            .chatbot-toggle:active {
+                transform: scale(1.05);
+            }
+
+            .chatbot-window {
+                position: absolute;
+                bottom: 90px;
+                right: 0;
+                width: 380px;
+                height: 550px;
+                background: white;
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+                display: none;
+                flex-direction: column;
+                overflow: hidden;
+                border: 1px solid rgba(102, 126, 234, 0.1);
+                backdrop-filter: blur(10px);
+            }
+
+            .chatbot-window.active {
+                display: flex;
+                animation: slideUpBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+
+            @keyframes slideUpBounce {
+                0% {
+                    opacity: 0;
+                    transform: translateY(30px) scale(0.9);
+                }
+                50% {
+                    transform: translateY(-5px) scale(1.02);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+
+            .chatbot-header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 20px 25px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .chatbot-header::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+                opacity: 0.3;
+            }
+
+            .chatbot-header h5 {
+                margin: 0;
+                font-size: 18px;
+                font-weight: 700;
+                position: relative;
+                z-index: 1;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .chatbot-header h5::before {
+                content: '🤖';
+                font-size: 20px;
+            }
+
+            .chatbot-close {
+                background: rgba(255, 255, 255, 0.2);
+                border: none;
+                color: white;
+                font-size: 18px;
+                cursor: pointer;
+                padding: 8px;
+                border-radius: 50%;
+                transition: all 0.3s ease;
+                position: relative;
+                z-index: 1;
+                width: 35px;
+                height: 35px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .chatbot-close:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: rotate(90deg);
+            }
+
+            .chatbot-messages {
+                flex: 1;
+                padding: 25px;
+                overflow-y: auto;
+                background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+                scroll-behavior: smooth;
+            }
+
+            .chatbot-messages::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .chatbot-messages::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 3px;
+            }
+
+            .chatbot-messages::-webkit-scrollbar-thumb {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 3px;
+            }
+
+            .message {
+                margin-bottom: 20px;
+                display: flex;
+                animation: messageSlide 0.4s ease-out;
+            }
+
+            @keyframes messageSlide {
+                from {
+                    opacity: 0;
+                    transform: translateX(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .user-message {
+                justify-content: flex-end;
+            }
+
+            .bot-message {
+                justify-content: flex-start;
+            }
+
+            .message-content {
+                max-width: 85%;
+                padding: 15px 20px;
+                border-radius: 20px;
+                font-size: 14px;
+                line-height: 1.5;
+                position: relative;
+                word-wrap: break-word;
+            }
+
+            .user-message .message-content {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-bottom-right-radius: 8px;
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            }
+
+            .bot-message .message-content {
+                background: white;
+                color: #333;
+                border: 1px solid #e8ecf0;
+                border-bottom-left-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            }
+
+            .bot-message .message-content::before {
+                content: '';
+                position: absolute;
+                left: -8px;
+                bottom: 8px;
+                width: 0;
+                height: 0;
+                border-style: solid;
+                border-width: 8px 8px 8px 0;
+                border-color: transparent white transparent transparent;
+            }
+
+            .user-message .message-content::after {
+                content: '';
+                position: absolute;
+                right: -8px;
+                bottom: 8px;
+                width: 0;
+                height: 0;
+                border-style: solid;
+                border-width: 8px 0 8px 8px;
+                border-color: transparent transparent transparent #667eea;
+            }
+
+            .message-time {
+                font-size: 11px;
+                color: #999;
+                margin-top: 5px;
+                text-align: right;
+            }
+
+            .bot-message .message-time {
+                text-align: left;
+            }
+
+            .typing-indicator {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                padding: 15px 20px;
+                background: white;
+                border-radius: 20px;
+                border: 1px solid #e8ecf0;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+                margin-bottom: 20px;
+                max-width: 85%;
+            }
+
+            .typing-dot {
+                width: 8px;
+                height: 8px;
+                background: #667eea;
+                border-radius: 50%;
+                animation: typing 1.4s infinite ease-in-out;
+            }
+
+            .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+            .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+            @keyframes typing {
+                0%, 80%, 100% {
+                    transform: scale(0);
+                    opacity: 0.5;
+                }
+                40% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+
+            .chatbot-input {
+                padding: 20px 25px;
+                background: white;
+                border-top: 1px solid #e8ecf0;
+                display: flex;
+                gap: 12px;
+                align-items: center;
+                position: relative;
+            }
+
+            .chatbot-input::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, #667eea, transparent);
+            }
+
+            #chatbot-input-field {
+                flex: 1;
+                border: 2px solid #e8ecf0;
+                border-radius: 25px;
+                padding: 12px 20px;
+                font-size: 14px;
+                outline: none;
+                transition: all 0.3s ease;
+                background: #f8f9fa;
+            }
+
+            #chatbot-input-field:focus {
+                border-color: #667eea;
+                background: white;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+
+            .chatbot-send {
+                width: 45px;
+                height: 45px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: none;
+                border-radius: 50%;
+                color: white;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                font-size: 16px;
+            }
+
+            .chatbot-send:hover {
+                transform: scale(1.1);
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            }
+
+            .chatbot-send:active {
+                transform: scale(0.95);
+            }
+
+            .chatbot-send:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+            /* Styles pour les réponses structurées */
+            .response-card {
+                background: white;
+                border-radius: 12px;
+                padding: 15px;
+                margin: 10px 0;
+                border-left: 4px solid #667eea;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .response-title {
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 8px;
+                font-size: 15px;
+            }
+
+            .response-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .response-list li {
+                padding: 6px 0;
+                border-bottom: 1px solid #f0f0f0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .response-list li:last-child {
+                border-bottom: none;
+            }
+
+            .service-name {
+                font-weight: 500;
+                color: #333;
+            }
+
+            .service-price {
+                font-weight: 600;
+                color: #667eea;
+                background: rgba(102, 126, 234, 0.1);
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-size: 12px;
+            }
+
+            .contact-info {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin: 8px 0;
+                padding: 8px;
+                background: rgba(102, 126, 234, 0.05);
+                border-radius: 8px;
+            }
+
+            .contact-icon {
+                font-size: 16px;
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .chatbot-window {
+                    width: 320px;
+                    height: 480px;
+                }
+                
+                #chatbot-container {
+                    bottom: 15px;
+                    right: 15px;
+                }
+
+                .chatbot-toggle {
+                    width: 60px;
+                    height: 60px;
+                    font-size: 24px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .chatbot-window {
+                    width: calc(100vw - 30px);
+                    height: calc(100vh - 100px);
+                    bottom: 80px;
+                    right: 15px;
+                }
+            }
+        </style>
 
     </head>
         
@@ -66,6 +514,9 @@
                         </li>
                          <li class="nav-item">
                             <a class="nav-link click-scroll" href="Ourteams.html">Equipe</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link click-scroll" href="admin-login.html">Admin</a>
                         </li>
                     
                     </ul>
@@ -629,6 +1080,34 @@
             </div>
         </footer>
 
+        <!-- Chatbot IA Flottant -->
+        <div id="chatbot-container">
+            <div id="chatbot-toggle" class="chatbot-toggle">
+                <i class="bi bi-chat-dots"></i>
+            </div>
+            <div id="chatbot-window" class="chatbot-window">
+                <div class="chatbot-header">
+                    <h5>Assistant DigiCreaTeam</h5>
+                    <button id="chatbot-close" class="chatbot-close">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+                <div class="chatbot-messages" id="chatbot-messages">
+                    <div class="message bot-message">
+                        <div class="message-content">
+                            Bonjour ! Je suis l'assistant de DigiCreaTeam. Comment puis-je vous aider aujourd'hui ?
+                        </div>
+                    </div>
+                </div>
+                <div class="chatbot-input">
+                    <input type="text" id="chatbot-input-field" placeholder="Tapez votre message...">
+                    <button id="chatbot-send" class="chatbot-send">
+                        <i class="bi bi-send"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- JAVASCRIPT FILES -->
         <script src="js/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
@@ -637,6 +1116,8 @@
         <script src="js/jquery.magnific-popup.min.js"></script>
         <script src="js/magnific-popup-options.js"></script>
         <script src="js/custom.js"></script>
+        <script src="js/analytics.js"></script>
+        <script src="js/activity-simulator.js"></script>
         <script src="js/ai-agent-simple.js"></script>
         <script src="js/ai-agent-test.js"></script>
         <script src="js/ai-agent-manual.js"></script>
@@ -706,6 +1187,476 @@
                 }
             });
             </script>
+
+        <!-- Script pour le Chatbot IA -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const chatbotToggle = document.getElementById('chatbot-toggle');
+                const chatbotWindow = document.getElementById('chatbot-window');
+                const chatbotClose = document.getElementById('chatbot-close');
+                const chatbotInput = document.getElementById('chatbot-input-field');
+                const chatbotSend = document.getElementById('chatbot-send');
+                const chatbotMessages = document.getElementById('chatbot-messages');
+
+                // Base de connaissances enrichie pour les réponses IA
+                const knowledgeBase = {
+                    'salut': {
+                        type: 'greeting',
+                        content: 'Bonjour ! 👋 Je suis l\'assistant IA de DigiCreaTeam. Comment puis-je vous aider aujourd\'hui ?',
+                        quickActions: ['Nos services', 'Tarifs', 'Contact', 'Projets']
+                    },
+                    'bonjour': {
+                        type: 'greeting',
+                        content: 'Bonjour ! 👋 Je suis là pour vous aider avec nos services. Que souhaitez-vous savoir ?',
+                        quickActions: ['Nos services', 'Tarifs', 'Contact', 'Projets']
+                    },
+                    'service': {
+                        type: 'services',
+                        content: 'Voici nos services professionnels :',
+                        data: [
+                            { name: 'Sites Web', price: '$300', description: 'Design moderne et responsive' },
+                            { name: 'Numérisation d\'établissements', price: '$700', description: 'Gestion automatisée' },
+                            { name: 'E-commerce', price: '$1,200', description: 'Boutique en ligne complète' },
+                            { name: 'SEO', price: '$1,450', description: 'Optimisation pour les moteurs de recherche' }
+                        ]
+                    },
+                    'services': {
+                        type: 'services',
+                        content: 'Voici nos services professionnels :',
+                        data: [
+                            { name: 'Sites Web', price: '$300', description: 'Design moderne et responsive' },
+                            { name: 'Numérisation d\'établissements', price: '$700', description: 'Gestion automatisée' },
+                            { name: 'E-commerce', price: '$1,200', description: 'Boutique en ligne complète' },
+                            { name: 'SEO', price: '$1,450', description: 'Optimisation pour les moteurs de recherche' }
+                        ]
+                    },
+                    'prix': {
+                        type: 'pricing',
+                        content: 'Voici nos tarifs détaillés :',
+                        data: [
+                            { name: 'Sites Web', price: '$300', features: ['Design responsive', 'Sécurisé', 'Livraison rapide'] },
+                            { name: 'Numérisation d\'établissements', price: '$700', features: ['Gestion élèves/employés', 'Système de suivi', 'Automatisation'] },
+                            { name: 'E-commerce', price: '$1,200', features: ['Boutique complète', 'Gestion commandes', 'Paiements sécurisés'] },
+                            { name: 'SEO', price: '$1,450', features: ['Optimisation', 'Amélioration classement', 'Augmentation visibilité'] }
+                        ]
+                    },
+                    'tarif': {
+                        type: 'pricing',
+                        content: 'Voici nos tarifs détaillés :',
+                        data: [
+                            { name: 'Sites Web', price: '$300', features: ['Design responsive', 'Sécurisé', 'Livraison rapide'] },
+                            { name: 'Numérisation d\'établissements', price: '$700', features: ['Gestion élèves/employés', 'Système de suivi', 'Automatisation'] },
+                            { name: 'E-commerce', price: '$1,200', features: ['Boutique complète', 'Gestion commandes', 'Paiements sécurisés'] },
+                            { name: 'SEO', price: '$1,450', features: ['Optimisation', 'Amélioration classement', 'Augmentation visibilité'] }
+                        ]
+                    },
+                    'contact': {
+                        type: 'contact',
+                        content: 'Voici comment nous contacter :',
+                        data: [
+                            { type: 'email', value: 'digicreateam@gmail.com', icon: '📧' },
+                            { type: 'phone', value: '+243 982 345 963', icon: '📞' },
+                            { type: 'location', value: 'Kinshasa, RDC', icon: '📍' }
+                        ]
+                    },
+                    'email': {
+                        type: 'contact',
+                        content: 'Notre email :',
+                        data: [
+                            { type: 'email', value: 'digicreateam@gmail.com', icon: '📧' }
+                        ]
+                    },
+                    'téléphone': {
+                        type: 'contact',
+                        content: 'Notre numéro de téléphone :',
+                        data: [
+                            { type: 'phone', value: '+243 982 345 963', icon: '📞' }
+                        ]
+                    },
+                    'site web': {
+                        type: 'service_detail',
+                        service: 'Sites Web',
+                        content: 'Découvrez notre service de création de sites web :',
+                        features: ['Design moderne et responsive', 'Sécurisé et optimisé', 'Livraison rapide', 'Support technique'],
+                        price: '$300',
+                        cta: 'Intéressé par ce service ?'
+                    },
+                    'ecommerce': {
+                        type: 'service_detail',
+                        service: 'E-commerce',
+                        content: 'Notre service e-commerce complet :',
+                        features: ['Boutique en ligne complète', 'Gestion des commandes', 'Paiements sécurisés', 'Interface admin'],
+                        price: '$1,200',
+                        cta: 'Intéressé par ce service ?'
+                    },
+                    'seo': {
+                        type: 'service_detail',
+                        service: 'SEO',
+                        content: 'Optimisez votre visibilité en ligne :',
+                        features: ['Optimisation pour les moteurs de recherche', 'Amélioration du classement', 'Augmentation de la visibilité', 'Rapports détaillés'],
+                        price: '$1,450',
+                        cta: 'Voulez-vous plus d\'informations ?'
+                    },
+                    'établissement': {
+                        type: 'service_detail',
+                        service: 'Numérisation d\'établissements',
+                        content: 'Transformez votre établissement :',
+                        features: ['Gestion des élèves/employés', 'Système de suivi', 'Automatisation des processus', 'Rapports en temps réel'],
+                        price: '$700',
+                        cta: 'Votre établissement est-il intéressé ?'
+                    },
+                    'équipe': {
+                        type: 'team',
+                        content: 'Notre équipe d\'experts :',
+                        data: [
+                            { role: 'Fondateur', name: 'Monsieur Jordan SOFILA', expertise: 'Expert en Informatique' },
+                            { role: 'Localisation', name: 'Kinshasa, RDC', expertise: 'Service dans 26 provinces' }
+                        ]
+                    },
+                    'projet': {
+                        type: 'projects',
+                        content: 'Nos réalisations récentes :',
+                        data: [
+                            { name: 'Sites web pour entreprises', description: 'Solutions web personnalisées' },
+                            { name: 'Systèmes de gestion d\'établissements', description: 'Numérisation complète' },
+                            { name: 'Boutiques en ligne', description: 'E-commerce sur mesure' }
+                        ]
+                    },
+                    'projets': {
+                        type: 'projects',
+                        content: 'Nos réalisations récentes :',
+                        data: [
+                            { name: 'Sites web pour entreprises', description: 'Solutions web personnalisées' },
+                            { name: 'Systèmes de gestion d\'établissements', description: 'Numérisation complète' },
+                            { name: 'Boutiques en ligne', description: 'E-commerce sur mesure' }
+                        ]
+                    },
+                    'aide': {
+                        type: 'help',
+                        content: 'Je peux vous aider avec :',
+                        categories: [
+                            { name: 'Services', description: 'Informations sur nos services' },
+                            { name: 'Tarifs', description: 'Prix et devis' },
+                            { name: 'Contact', description: 'Coordonnées et formulaire' },
+                            { name: 'Projets', description: 'Nos réalisations' }
+                        ]
+                    },
+                    'help': {
+                        type: 'help',
+                        content: 'Je peux vous aider avec :',
+                        categories: [
+                            { name: 'Services', description: 'Informations sur nos services' },
+                            { name: 'Tarifs', description: 'Prix et devis' },
+                            { name: 'Contact', description: 'Coordonnées et formulaire' },
+                            { name: 'Projets', description: 'Nos réalisations' }
+                        ]
+                    }
+                };
+
+                // Fonction pour obtenir une réponse IA enrichie
+                function getAIResponse(userMessage) {
+                    const message = userMessage.toLowerCase().trim();
+                    
+                    // Recherche de mots-clés dans la base de connaissances
+                    for (const [keyword, response] of Object.entries(knowledgeBase)) {
+                        if (message.includes(keyword)) {
+                            return response;
+                        }
+                    }
+                    
+                    // Réponses par défaut selon le contexte
+                    if (message.includes('merci') || message.includes('thanks')) {
+                        return {
+                            type: 'simple',
+                            content: 'De rien ! 😊 Y a-t-il autre chose que je puisse vous aider ?',
+                            quickActions: ['Nos services', 'Tarifs', 'Contact']
+                        };
+                    }
+                    
+                    if (message.includes('au revoir') || message.includes('bye')) {
+                        return {
+                            type: 'simple',
+                            content: 'Au revoir ! 👋 N\'hésitez pas à revenir si vous avez d\'autres questions.',
+                            quickActions: []
+                        };
+                    }
+                    
+                    if (message.includes('comment') || message.includes('quoi')) {
+                        return {
+                            type: 'help',
+                            content: 'Je peux vous renseigner sur :',
+                            categories: [
+                                { name: 'Services', description: 'Nos services professionnels' },
+                                { name: 'Tarifs', description: 'Prix et devis' },
+                                { name: 'Contact', description: 'Coordonnées et formulaire' },
+                                { name: 'Projets', description: 'Nos réalisations' }
+                            ]
+                        };
+                    }
+                    
+                    // Réponse par défaut
+                    return {
+                        type: 'simple',
+                        content: 'Je comprends votre question. Pour vous aider au mieux, pouvez-vous me dire si vous vous intéressez à nos services, nos tarifs, ou si vous voulez nous contacter ?',
+                        quickActions: ['Nos services', 'Tarifs', 'Contact', 'Projets']
+                    };
+                }
+
+                // Fonction pour créer des boutons d'action rapide
+                function createQuickActions(actions) {
+                    if (!actions || actions.length === 0) return '';
+                    
+                    let html = '<div class="quick-actions" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">';
+                    actions.forEach(action => {
+                        html += `<button class="quick-action-btn" onclick="sendQuickMessage('${action}')" style="
+                            background: rgba(102, 126, 234, 0.1);
+                            border: 1px solid rgba(102, 126, 234, 0.3);
+                            color: #667eea;
+                            padding: 6px 12px;
+                            border-radius: 15px;
+                            font-size: 12px;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                        " onmouseover="this.style.background='rgba(102, 126, 234, 0.2)'" onmouseout="this.style.background='rgba(102, 126, 234, 0.1)'">${action}</button>`;
+                    });
+                    html += '</div>';
+                    return html;
+                }
+
+                // Fonction pour créer une réponse structurée
+                function createStructuredResponse(response) {
+                    let html = '';
+                    
+                    switch (response.type) {
+                        case 'greeting':
+                            html = `<div class="message-content">${response.content}</div>`;
+                            html += createQuickActions(response.quickActions);
+                            break;
+                            
+                        case 'services':
+                            html = `<div class="response-card">
+                                <div class="response-title">${response.content}</div>
+                                <ul class="response-list">`;
+                            response.data.forEach(service => {
+                                html += `<li>
+                                    <div>
+                                        <div class="service-name">${service.name}</div>
+                                        <div style="font-size: 12px; color: #666; margin-top: 2px;">${service.description}</div>
+                                    </div>
+                                    <div class="service-price">${service.price}</div>
+                                </li>`;
+                            });
+                            html += `</ul></div>`;
+                            break;
+                            
+                        case 'pricing':
+                            html = `<div class="response-card">
+                                <div class="response-title">${response.content}</div>
+                                <ul class="response-list">`;
+                            response.data.forEach(item => {
+                                html += `<li>
+                                    <div>
+                                        <div class="service-name">${item.name}</div>
+                                        <div style="font-size: 12px; color: #666; margin-top: 2px;">${item.features.join(', ')}</div>
+                                    </div>
+                                    <div class="service-price">${item.price}</div>
+                                </li>`;
+                            });
+                            html += `</ul></div>`;
+                            break;
+                            
+                        case 'contact':
+                            html = `<div class="response-card">
+                                <div class="response-title">${response.content}</div>`;
+                            response.data.forEach(contact => {
+                                html += `<div class="contact-info">
+                                    <span class="contact-icon">${contact.icon}</span>
+                                    <span>${contact.value}</span>
+                                </div>`;
+                            });
+                            html += `</div>`;
+                            break;
+                            
+                        case 'service_detail':
+                            html = `<div class="response-card">
+                                <div class="response-title">${response.service}</div>
+                                <div style="margin: 10px 0; color: #666;">${response.content}</div>
+                                <ul style="margin: 10px 0; padding-left: 20px;">`;
+                            response.features.forEach(feature => {
+                                html += `<li style="margin: 5px 0;">${feature}</li>`;
+                            });
+                            html += `</ul>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                                    <div class="service-price">${response.price}</div>
+                                    <div style="font-size: 12px; color: #666;">${response.cta}</div>
+                                </div>
+                            </div>`;
+                            break;
+                            
+                        case 'team':
+                            html = `<div class="response-card">
+                                <div class="response-title">${response.content}</div>`;
+                            response.data.forEach(member => {
+                                html += `<div style="margin: 10px 0; padding: 10px; background: rgba(102, 126, 234, 0.05); border-radius: 8px;">
+                                    <div style="font-weight: 600; color: #333;">${member.role}</div>
+                                    <div style="color: #666; margin-top: 2px;">${member.name}</div>
+                                    <div style="font-size: 12px; color: #999; margin-top: 2px;">${member.expertise}</div>
+                                </div>`;
+                            });
+                            html += `</div>`;
+                            break;
+                            
+                        case 'projects':
+                            html = `<div class="response-card">
+                                <div class="response-title">${response.content}</div>`;
+                            response.data.forEach(project => {
+                                html += `<div style="margin: 10px 0; padding: 10px; background: rgba(102, 126, 234, 0.05); border-radius: 8px;">
+                                    <div style="font-weight: 600; color: #333;">${project.name}</div>
+                                    <div style="font-size: 12px; color: #666; margin-top: 2px;">${project.description}</div>
+                                </div>`;
+                            });
+                            html += `</div>`;
+                            break;
+                            
+                        case 'help':
+                            html = `<div class="response-card">
+                                <div class="response-title">${response.content}</div>`;
+                            response.categories.forEach(category => {
+                                html += `<div style="margin: 8px 0; padding: 8px; background: rgba(102, 126, 234, 0.05); border-radius: 6px;">
+                                    <div style="font-weight: 500; color: #333;">${category.name}</div>
+                                    <div style="font-size: 12px; color: #666; margin-top: 2px;">${category.description}</div>
+                                </div>`;
+                            });
+                            html += `</div>`;
+                            break;
+                            
+                        default:
+                            html = `<div class="message-content">${response.content}</div>`;
+                    }
+                    
+                    return html;
+                }
+
+                // Fonction pour envoyer un message rapide
+                window.sendQuickMessage = function(message) {
+                    chatbotInput.value = message;
+                    processUserMessage();
+                }
+
+                // Fonction pour afficher l'indicateur de frappe
+                function showTypingIndicator() {
+                    const typingDiv = document.createElement('div');
+                    typingDiv.className = 'message bot-message';
+                    typingDiv.id = 'typing-indicator';
+                    typingDiv.innerHTML = `
+                        <div class="typing-indicator">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    `;
+                    chatbotMessages.appendChild(typingDiv);
+                    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+                }
+
+                // Fonction pour masquer l'indicateur de frappe
+                function hideTypingIndicator() {
+                    const typingIndicator = document.getElementById('typing-indicator');
+                    if (typingIndicator) {
+                        typingIndicator.remove();
+                    }
+                }
+
+                // Fonction pour ajouter un message
+                function addMessage(content, isUser = false, isStructured = false) {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+                    
+                    if (isStructured) {
+                        messageDiv.innerHTML = content;
+                    } else {
+                        const contentDiv = document.createElement('div');
+                        contentDiv.className = 'message-content';
+                        contentDiv.textContent = content;
+                        messageDiv.appendChild(contentDiv);
+                    }
+                    
+                    // Ajouter l'heure
+                    const timeDiv = document.createElement('div');
+                    timeDiv.className = 'message-time';
+                    timeDiv.textContent = new Date().toLocaleTimeString('fr-FR', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                    messageDiv.appendChild(timeDiv);
+                    
+                    chatbotMessages.appendChild(messageDiv);
+                    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+                }
+
+                // Fonction pour traiter le message de l'utilisateur
+                function processUserMessage() {
+                    const userMessage = chatbotInput.value.trim();
+                    if (!userMessage) return;
+                    
+                    // Désactiver le bouton d'envoi
+                    chatbotSend.disabled = true;
+                    
+                    // Ajouter le message de l'utilisateur
+                    addMessage(userMessage, true);
+                    chatbotInput.value = '';
+                    
+                    // Afficher l'indicateur de frappe
+                    showTypingIndicator();
+                    
+                    // Simuler un délai de réponse plus réaliste
+                    setTimeout(() => {
+                        hideTypingIndicator();
+                        
+                        const aiResponse = getAIResponse(userMessage);
+                        
+                        // Vérifier si c'est une réponse structurée
+                        if (typeof aiResponse === 'object' && aiResponse.type) {
+                            const structuredContent = createStructuredResponse(aiResponse);
+                            addMessage(structuredContent, false, true);
+                        } else {
+                            addMessage(aiResponse, false);
+                        }
+                        
+                        // Réactiver le bouton d'envoi
+                        chatbotSend.disabled = false;
+                    }, 1500 + Math.random() * 1000); // Délai variable entre 1.5 et 2.5 secondes
+                }
+
+                // Événements
+                chatbotToggle.addEventListener('click', function() {
+                    chatbotWindow.classList.toggle('active');
+                    if (chatbotWindow.classList.contains('active')) {
+                        chatbotInput.focus();
+                    }
+                });
+
+                chatbotClose.addEventListener('click', function() {
+                    chatbotWindow.classList.remove('active');
+                });
+
+                chatbotSend.addEventListener('click', processUserMessage);
+
+                chatbotInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        processUserMessage();
+                    }
+                });
+
+                // Fermer le chatbot en cliquant à l'extérieur
+                const chatbotContainer = document.getElementById('chatbot-container');
+                document.addEventListener('click', function(e) {
+                    if (!chatbotContainer.contains(e.target) && chatbotWindow.classList.contains('active')) {
+                        chatbotWindow.classList.remove('active');
+                    }
+                });
+            });
+        </script>
           
                 
 
