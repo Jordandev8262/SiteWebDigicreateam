@@ -83,6 +83,26 @@
             text-align: center;
         }
 
+        /* Boutique management */
+        .boutique-admin {
+            background: white;
+            border-radius: 15px;
+            padding: 1.25rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .boutique-admin h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+        .admin-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: .75rem; margin-bottom: .75rem; }
+        .admin-actions { display: flex; gap: .75rem; flex-wrap: wrap; }
+        .btn-admin { background: linear-gradient(135deg, #14B789, #667eea); color: #fff; border: none; padding: 10px 16px; border-radius: 10px; font-weight: 600; }
+        .btn-admin-outline { background: transparent; color: #667eea; border: 2px solid #667eea; padding: 10px 16px; border-radius: 10px; font-weight: 600; }
+        .admin-note { color:#667; margin-top:8px; }
+
         .dashboard-subtitle {
             font-size: 1.2rem;
             color: #7f8c8d;
@@ -476,6 +496,89 @@
                 width: 100%;
             }
         }
+
+        /* Boutons de suppression liens */
+        .link-delete-btn {
+            background: transparent;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .link-delete-btn:hover {
+            background: #dc3545;
+            color: #fff;
+        }
+        .clear-links-btn {
+            background: transparent;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            float: right;
+        }
+        .clear-links-btn:hover {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        /* Modal gestion boutiques */
+        .modal-backdrop-custom {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .modal-backdrop-custom.show { display: flex; }
+        .modal-container-custom {
+            background: #fff;
+            width: 95%;
+            max-width: 900px;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .modal-header-custom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #eee;
+        }
+        .modal-title-custom { font-size: 1.2rem; font-weight: 700; color: #2c3e50; }
+        .modal-close-btn { background: transparent; border: none; font-size: 1.5rem; line-height: 1; cursor: pointer; color: #7f8c8d; }
+        .modal-body-custom { padding: 1rem 1.25rem; max-height: 70vh; overflow: auto; }
+        .boutique-item-card { border: 1px solid #e9ecef; border-radius: 10px; padding: .75rem; margin-bottom: .75rem; background: #fff; }
+        .boutique-item-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .5rem; }
+        .boutique-item-actions { display: flex; gap: .5rem; margin-top: .5rem; }
+        .btn-save-boutique { background: linear-gradient(135deg, #14B789, #667eea); color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 600; }
+        .btn-delete-boutique { background: transparent; color: #dc3545; border: 1px solid #dc3545; padding: 6px 12px; border-radius: 8px; font-weight: 600; }
+        @media (max-width: 768px) { .boutique-item-grid { grid-template-columns: 1fr; } }
+
+        /* Ligne compacte pour Détails des Boutiques */
+        .boutique-row { display: flex; gap: .75rem; align-items: center; justify-content: space-between; padding: .6rem .75rem; border: 1px solid #e9ecef; border-radius: 10px; background: #fff; margin-bottom: .5rem; }
+        .boutique-row .info { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+        .boutique-name { font-weight: 700; color: #2c3e50; }
+        .badge-cat { background: linear-gradient(135deg, #14B789, #667eea); color: #fff; padding: 2px 8px; border-radius: 12px; font-size: .75rem; font-weight: 600; }
+        .badge-status { padding: 2px 8px; border-radius: 12px; font-size: .75rem; font-weight: 700; }
+        .badge-status.online { background: #2ecc71; color: #fff; }
+        .badge-status.offline { background: #e74c3c; color: #fff; }
+        .btn-edit-boutique { background: transparent; color: #0d6efd; border: 1px solid #0d6efd; padding: 6px 12px; border-radius: 8px; font-weight: 600; }
+        .btn-edit-boutique:hover { background: #0d6efd; color: #fff; }
+        .inline-editor { border: 1px dashed #cbd5e1; border-radius: 10px; padding: .75rem; margin: .5rem 0; background: #f8fafc; }
+        .inline-editor .row-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .5rem; }
+        @media (max-width: 768px) { .inline-editor .row-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -618,10 +721,81 @@
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="link-stats">
-                        <h3 class="chart-title">Liens les Plus Clicqués</h3>
+                        <h3 class="chart-title">Liens les Plus Clicqués <button id="clearAllLinksBtn" class="clear-links-btn"><i class="bi bi-trash"></i> Supprimer tout</button></h3>
                         <div id="linkStats">
                             <!-- Statistiques des liens générées par JavaScript -->
                         </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Gestion Boutique -->
+            <div class="boutique-admin">
+                <h3><i class="bi bi-shop"></i> Espace Boutique (Créer / Supprimer)</h3>
+                <div class="admin-row">
+                    <input type="text" id="newName" class="form-control" placeholder="Nom de la boutique">
+                    <input type="text" id="newLocation" class="form-control" placeholder="Localisation (ex: Kinshasa, RDC)">
+                    <input type="text" id="newHours" class="form-control" placeholder="Heures (ex: 8h-18h)">
+                    <select id="newCategory" class="form-select">
+                        <option value="divers">Divers</option>
+                        <option value="electronique">Électronique</option>
+                    </select>
+                </div>
+                <div class="admin-row">
+                    <input type="url" id="newImage" class="form-control" placeholder="URL de l'image (optionnel)">
+                    <input type="file" id="newImageFile" class="form-control" accept="image/*">
+                    <select id="newStatus" class="form-select">
+                        <option value="online">En ligne</option>
+                        <option value="offline">Hors ligne</option>
+                    </select>
+                    <input type="number" min="1" max="5" step="1" id="newRating" class="form-control" placeholder="Note (1-5)">
+                </div>
+                <div class="admin-row">
+                    <input type="text" id="newDescription" class="form-control" placeholder="Description courte">
+                </div>
+                <div class="admin-actions">
+                    <button id="createBoutiqueBtn" class="btn-admin"><i class="bi bi-check2-circle"></i> Ajouter la boutique</button>
+                    <button id="clearFormBtn" class="btn-admin-outline"><i class="bi bi-eraser"></i> Effacer le formulaire</button>
+                    <button id="clearCustomBtn" class="btn-admin-outline"><i class="bi bi-trash"></i> Supprimer les boutiques ajoutées</button>
+                    <button id="manageBoutiquesBtn" class="btn-admin-outline"><i class="bi bi-gear"></i> Gérer les boutiques</button>
+                </div>
+                <small class="admin-note">Les boutiques sont synchronisées avec la page Boutique via votre navigateur.</small>
+            </div>
+            <!-- Détails Boutiques (affichage inline) -->
+            <div class="boutique-admin" id="boutiquesInlineSection" style="display: none;">
+                <h3><i class="bi bi-list-ul"></i> Détails des Boutiques</h3>
+                <div id="boutiquesInlineContainer"></div>
+            </div>
+            <!-- Accès Offre (après Détails des Boutiques) -->
+            <div class="boutique-admin">
+                <h3><i class="bi bi-toggle2-on"></i> Accès Offre (navigation)</h3>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="me-3">
+                        <div class="fw-bold">Activer le lien "Offre" dans la barre de navigation</div>
+                        <small class="text-muted">Contrôle visible sur l'Accueil (`index.html`).</small>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="adminToggleOffre">
+                        <label class="form-check-label" for="adminToggleOffre">Activer</label>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <label class="form-label">Titre d'offre (affiché sur `offre.html`)</label>
+                    <div class="d-flex gap-2">
+                        <input type="text" id="adminOffreTitle" class="form-control" placeholder="Offre: Développeur(se) Web">
+                        <button id="saveOffreTitleBtn" class="btn-admin" type="button"><i class="bi bi-save"></i> Enregistrer</button>
+                    </div>
+                    <small class="text-muted">Le titre se met à jour côté visiteur à l'ouverture d'`offre.html`.</small>
+                </div>
+                <div class="mt-3">
+                    <label class="form-label">Description (ligne 1)</label>
+                    <textarea id="adminOffreDesc" class="form-control" rows="2" placeholder="Texte de description..."></textarea>
+                </div>
+                <div class="mt-3">
+                    <label class="form-label">Description (ligne 2)</label>
+                    <textarea id="adminOffreDesc2" class="form-control" rows="2" placeholder="Texte complémentaire ou badges..."></textarea>
+                    <div class="mt-2 d-flex gap-2">
+                        <button id="saveOffreDescsBtn" class="btn-admin" type="button"><i class="bi bi-save"></i> Enregistrer descriptions</button>
+                        <button id="clearOffreDescsBtn" class="btn-admin-outline" type="button"><i class="bi bi-x-circle"></i> Réinitialiser</button>
                     </div>
                 </div>
             </div>
@@ -967,9 +1141,18 @@
                                 <i class="bi bi-arrow-${trend === 'up' ? 'up' : 'down'}"></i>
                                 ${trendValue}%
                             </div>
+                            <button class="link-delete-btn" data-url="${link.url}"><i class="bi bi-x-circle"></i> Supprimer</button>
                         </div>
                     `;
                     linkContainer.appendChild(linkDiv);
+                });
+
+                // Attacher les gestionnaires de suppression
+                linkContainer.querySelectorAll('.link-delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const url = this.getAttribute('data-url');
+                        deleteLinkStat(url);
+                    });
                 });
             } else {
                 linkContainer.innerHTML = `
@@ -980,6 +1163,14 @@
                     </div>
                 `;
             }
+        }
+
+        // Supprimer un lien des statistiques
+        function deleteLinkStat(url) {
+            if (!dashboardData.linkStats) return;
+            dashboardData.linkStats = dashboardData.linkStats.filter(item => item.url !== url);
+            saveData();
+            updateLinkStats(dashboardData);
         }
 
         // Mettre à jour les graphiques
@@ -1117,8 +1308,560 @@
                 
                 // Actualiser automatiquement toutes les 30 secondes
                 setInterval(refreshData, 30000);
+
+                // Initialiser la gestion boutique (localStorage)
+                initBoutiqueAdmin();
+
+                // Bouton suppression totale des liens
+                const clearAllBtn = document.getElementById('clearAllLinksBtn');
+                if (clearAllBtn) {
+                    clearAllBtn.addEventListener('click', function() {
+                        if (confirm('Supprimer toutes les statistiques de liens ?')) {
+                            dashboardData.linkStats = [];
+                            saveData();
+                            updateLinkStats(dashboardData);
+                        }
+                    });
+                }
+
+                // Synchroniser la section inline avec les changements de storage (overrides/customs)
+                window.addEventListener('storage', function(e) {
+                    const section = document.getElementById('boutiquesInlineSection');
+                    if (section && section.style.display !== 'none') {
+                        if (e.key === 'boutiqueOverrides' || e.key === BOUTIQUES_KEY) {
+                            renderBoutiquesListInline();
+                        }
+                    }
+                });
+
+                // Initialiser le toggle d'accès Offre
+                const adminToggleOffre = document.getElementById('adminToggleOffre');
+                if (adminToggleOffre) {
+                    const saved = localStorage.getItem('offreLinkEnabled');
+                    const enabled = saved === null ? true : saved === 'true';
+                    adminToggleOffre.checked = enabled;
+                    adminToggleOffre.addEventListener('change', function() {
+                        const state = adminToggleOffre.checked;
+                        localStorage.setItem('offreLinkEnabled', String(state));
+                    });
+                }
+
+                // Initialiser l'édition du titre d'offre
+                const adminOffreTitle = document.getElementById('adminOffreTitle');
+                const saveOffreTitleBtn = document.getElementById('saveOffreTitleBtn');
+                if (adminOffreTitle && saveOffreTitleBtn) {
+                    try {
+                        const savedTitle = localStorage.getItem('offreTitleText');
+                        if (savedTitle && savedTitle.trim() !== '') adminOffreTitle.value = savedTitle;
+                    } catch(e) {}
+                    saveOffreTitleBtn.addEventListener('click', function(){
+                        const value = (adminOffreTitle.value || '').trim() || 'Offre: Développeur(se) Web';
+                        localStorage.setItem('offreTitleText', value);
+                        alert('Titre d\'offre enregistré.');
+                    });
+                }
+
+                // Initialiser édition descriptions Offre
+                const adminOffreDesc = document.getElementById('adminOffreDesc');
+                const adminOffreDesc2 = document.getElementById('adminOffreDesc2');
+                const saveOffreDescsBtn = document.getElementById('saveOffreDescsBtn');
+                const clearOffreDescsBtn = document.getElementById('clearOffreDescsBtn');
+                if (adminOffreDesc && adminOffreDesc2 && saveOffreDescsBtn && clearOffreDescsBtn) {
+                    try {
+                        const s1 = localStorage.getItem('offreDescText');
+                        const s2 = localStorage.getItem('offreDesc2Text');
+                        if (s1 && s1.trim() !== '') adminOffreDesc.value = s1;
+                        if (s2 && s2.trim() !== '') adminOffreDesc2.value = s2;
+                    } catch(e) {}
+                    saveOffreDescsBtn.addEventListener('click', function(){
+                        const v1 = (adminOffreDesc.value || '').trim();
+                        const v2 = (adminOffreDesc2.value || '').trim();
+                        localStorage.setItem('offreDescText', v1);
+                        localStorage.setItem('offreDesc2Text', v2);
+                        alert('Descriptions enregistrées.');
+                    });
+                    clearOffreDescsBtn.addEventListener('click', function(){
+                        localStorage.removeItem('offreDescText');
+                        localStorage.removeItem('offreDesc2Text');
+                        adminOffreDesc.value = '';
+                        adminOffreDesc2.value = '';
+                        alert('Descriptions réinitialisées.');
+                    });
+                }
             }
         });
+        
+        // --- Gestion Boutique: création/suppression avec localStorage partagé avec Boutique.html ---
+        const BOUTIQUES_KEY = 'boutiquesCustom';
+        function getBoutiques() {
+            try { return JSON.parse(localStorage.getItem(BOUTIQUES_KEY) || '[]'); } catch(e) { return []; }
+        }
+        function saveBoutiques(items) { localStorage.setItem(BOUTIQUES_KEY, JSON.stringify(items)); }
+        function clearBoutiqueForm() {
+            ['newName','newLocation','newHours','newImage','newDescription','newRating'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+            const cat = document.getElementById('newCategory'); if (cat) cat.value = 'divers';
+            const st = document.getElementById('newStatus'); if (st) st.value = 'online';
+            const file = document.getElementById('newImageFile'); if (file) file.value = '';
+            window.__boutiqueImageDataUrl = undefined;
+        }
+        function initBoutiqueAdmin() {
+            // Handle file input -> data URL
+            const fileInput = document.getElementById('newImageFile');
+            if (fileInput) {
+                fileInput.addEventListener('change', function() {
+                    const file = this.files && this.files[0];
+                    if (!file) { window.__boutiqueImageDataUrl = undefined; return; }
+                    const reader = new FileReader();
+                    reader.onload = function(e) { window.__boutiqueImageDataUrl = e.target.result; };
+                    reader.readAsDataURL(file);
+                });
+            }
+            const createBtn = document.getElementById('createBoutiqueBtn');
+            if (createBtn) {
+                createBtn.addEventListener('click', function() {
+                    const data = {
+                        id: 'b_' + Date.now(),
+                        name: (document.getElementById('newName').value || '').trim(),
+                        location: (document.getElementById('newLocation').value || '').trim(),
+                        hours: (document.getElementById('newHours').value || '').trim(),
+                        category: document.getElementById('newCategory').value,
+                        image: (document.getElementById('newImage').value || '').trim(),
+                        imageDataUrl: window.__boutiqueImageDataUrl || '',
+                        status: document.getElementById('newStatus').value,
+                        rating: document.getElementById('newRating').value,
+                        description: (document.getElementById('newDescription').value || '').trim()
+                    };
+                    if (!data.name || !data.location || !data.hours) { alert('Veuillez renseigner au minimum: Nom, Localisation et Heures.'); return; }
+                    const items = getBoutiques();
+                    items.push(data);
+                    saveBoutiques(items);
+                    clearBoutiqueForm();
+                    alert('Boutique ajoutée. Ouvrez/rafraîchissez Boutique.html pour la voir.');
+                });
+            }
+            const clearBtn = document.getElementById('clearFormBtn');
+            if (clearBtn) clearBtn.addEventListener('click', clearBoutiqueForm);
+            const clearCustomBtn = document.getElementById('clearCustomBtn');
+            if (clearCustomBtn) {
+                clearCustomBtn.addEventListener('click', function() {
+                    if (confirm('Supprimer toutes les boutiques ajoutées (personnalisées) ?')) {
+                        saveBoutiques([]);
+                        alert('Boutiques personnalisées supprimées. Rafraîchissez Boutique.html.');
+                    }
+                });
+            }
+
+            // Ouvrir modal gestion
+            const manageBtn = document.getElementById('manageBoutiquesBtn');
+            if (manageBtn) {
+                manageBtn.addEventListener('click', function() {
+                    // Inline rendering instead of modal
+                    toggleBoutiquesInline();
+                });
+            }
+        }
+
+        // Boutiques par défaut de Boutique.html (lecture seule côté admin)
+        function getDefaultBoutiques() {
+            return [
+                {
+                    id: 'def_dumiya',
+                    name: 'DUMIYA',
+                    location: 'Kinshasa, RDC',
+                    hours: '8h-18h',
+                    category: 'divers',
+                    image: 'images/Presentation .jpg',
+                    status: 'online',
+                    rating: 3,
+                    description: 'Boutique spécialisée dans les produits divers et variés pour tous vos besoins quotidiens.',
+                    __default: true
+                },
+                {
+                    id: 'def_kikuu',
+                    name: 'KIKUU',
+                    location: 'Lubumbashi, RDC',
+                    hours: '9h-19h',
+                    category: 'divers',
+                    image: 'images/kikuu.jpg',
+                    status: 'online',
+                    rating: 2,
+                    description: 'Votre partenaire de confiance pour tous vos achats quotidiens avec un service de qualité.',
+                    __default: true
+                },
+                {
+                    id: 'def_stylebydiva',
+                    name: 'STYLEBYDIVA',
+                    location: 'Katanga, RDC',
+                    hours: '7h-20h',
+                    category: 'divers',
+                    image: 'images/divaboutique.jpg',
+                    status: 'online',
+                    rating: 4,
+                    description: 'Boutique de mode et style pour tous vos besoins vestimentaires et accessoires tendance.',
+                    __default: true
+                },
+                {
+                    id: 'def_mendo',
+                    name: 'MENDO',
+                    location: 'Kinshasa, RDC',
+                    hours: '8h-17h',
+                    category: 'electronique',
+                    image: 'images/ordi.jpg',
+                    status: 'online',
+                    rating: 4,
+                    description: 'Spécialiste en équipements informatiques et électroniques de haute qualité.',
+                    __default: true
+                },
+                {
+                    id: 'def_wakiki',
+                    name: 'WAKIKI',
+                    location: 'Matadi, RDC',
+                    hours: '9h-18h',
+                    category: 'electronique',
+                    image: 'images/drone.jpg',
+                    status: 'online',
+                    rating: 4,
+                    description: 'Technologies avancées et équipements électroniques pour professionnels et particuliers.',
+                    __default: true
+                },
+                {
+                    id: 'def_matos',
+                    name: 'MATOS',
+                    location: 'Kinshasa, RDC',
+                    hours: '10h-16h',
+                    category: 'electronique',
+                    image: 'images/electro.jpg',
+                    status: 'offline',
+                    rating: 1,
+                    description: 'Matériel électronique et composants pour réparations et projets DIY.',
+                    __default: true
+                }
+            ];
+        }
+
+        function getBoutiqueOverrides() {
+            try { return JSON.parse(localStorage.getItem('boutiqueOverrides') || '{}'); } catch (_) { return {}; }
+        }
+
+        function getDefaultBoutiquesMerged() {
+            const defaults = getDefaultBoutiques();
+            const overrides = getBoutiqueOverrides();
+            return defaults.map(d => {
+                const o = overrides[d.name];
+                if (!o) return d;
+                return {
+                    ...d,
+                    // if name override exists, display it while keeping id and __default
+                    name: o.name !== undefined ? o.name : d.name,
+                    location: o.location !== undefined ? o.location : d.location,
+                    hours: o.hours !== undefined ? o.hours : d.hours,
+                    category: o.category !== undefined ? o.category : d.category,
+                    image: o.image !== undefined ? o.image : d.image,
+                    status: o.status !== undefined ? o.status : d.status,
+                    rating: o.rating !== undefined ? o.rating : d.rating,
+                    description: o.description !== undefined ? o.description : d.description
+                };
+            });
+        }
+
+        function toggleBoutiquesInline() {
+            const section = document.getElementById('boutiquesInlineSection');
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                renderBoutiquesListInline();
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                section.style.display = 'none';
+            }
+        }
+
+        function renderBoutiquesListInline() {
+            const container = document.getElementById('boutiquesInlineContainer');
+            const defaults = getDefaultBoutiquesMerged();
+            const customs = getBoutiques();
+            const items = [...defaults, ...customs];
+            if (!items || items.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="bi bi-shop"></i><p>Aucune boutique personnalisée</p><small>Ajoutez-en via le formulaire ci-dessus</small></div>';
+                return;
+            }
+            container.innerHTML = '';
+            items.forEach((b) => {
+                const row = document.createElement('div');
+                row.className = 'boutique-row';
+                const isDefault = !!b.__default;
+                row.innerHTML = `
+                    <div class="info">
+                        <span class="boutique-name">${b.name || ''}</span>
+                        <span class="text-muted"><i class="bi bi-geo-alt"></i> ${b.location || ''}</span>
+                        <span class="badge-cat">${b.category === 'electronique' ? 'Électronique' : 'Divers'}</span>
+                        <span class="badge-status ${b.status === 'offline' ? 'offline' : 'online'}">${b.status === 'offline' ? 'Hors ligne' : 'En ligne'}</span>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-edit-boutique" data-action="edit" data-id="${b.id}"><i class="bi bi-pencil"></i> Modifier</button>
+                        ${isDefault ? '' : `<button class="btn-delete-boutique" data-action="delete" data-id="${b.id}"><i class="bi bi-trash"></i> Supprimer</button>`}
+                    </div>
+                `;
+                container.appendChild(row);
+
+                const editor = document.createElement('div');
+                editor.className = 'inline-editor';
+                editor.style.display = 'none';
+                editor.setAttribute('data-editor-for', b.id);
+                editor.innerHTML = `
+                    <div class="row-grid">
+                        <div>
+                            <label class="form-label">Nom</label>
+                            <input class="form-control" value="${b.name || ''}" data-field="name" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Localisation</label>
+                            <input class="form-control" value="${b.location || ''}" data-field="location" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Heures</label>
+                            <input class="form-control" value="${b.hours || ''}" data-field="hours" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Catégorie</label>
+                            <select class="form-select" data-field="category" data-id="${b.id}">
+                                <option value="divers" ${b.category === 'divers' ? 'selected' : ''}>Divers</option>
+                                <option value="electronique" ${b.category === 'electronique' ? 'selected' : ''}>Électronique</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Image (URL)</label>
+                            <input class="form-control" value="${b.image || ''}" data-field="image" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Statut</label>
+                            <select class="form-select" data-field="status" data-id="${b.id}">
+                                <option value="online" ${b.status === 'online' ? 'selected' : ''}>En ligne</option>
+                                <option value="offline" ${b.status === 'offline' ? 'selected' : ''}>Hors ligne</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Note</label>
+                            <input type="number" min="1" max="5" step="1" class="form-control" value="${b.rating || ''}" data-field="rating" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Description</label>
+                            <input class="form-control" value="${b.description || ''}" data-field="description" data-id="${b.id}">
+                        </div>
+                    </div>
+                    <div class="boutique-item-actions" style="margin-top:.6rem">
+                        <button class="btn-save-boutique" data-action="save-inline" data-id="${b.id}"><i class="bi bi-check2-circle"></i> Enregistrer</button>
+                        <button class="btn-admin-outline" data-action="cancel-inline" data-id="${b.id}"><i class="bi bi-x-circle"></i> Annuler</button>
+                    </div>
+                `;
+                container.appendChild(editor);
+            });
+            container.querySelectorAll('[data-action="edit"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const editor = container.querySelector(`[data-editor-for="${id}"]`);
+                    if (!editor) return;
+                    editor.style.display = (editor.style.display === 'none') ? 'block' : 'none';
+                });
+            });
+            container.querySelectorAll('[data-action="delete"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    deleteBoutiqueInline(id);
+                });
+            });
+            container.querySelectorAll('[data-action="save-inline"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    saveOrCloneBoutiqueInline(id);
+                });
+            });
+            container.querySelectorAll('[data-action="cancel-inline"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const editor = container.querySelector(`[data-editor-for="${id}"]`);
+                    if (editor) editor.style.display = 'none';
+                });
+            });
+        }
+
+        function saveOrCloneBoutiqueInline(id) {
+            const defaults = getDefaultBoutiques();
+            const isDefault = defaults.some(d => d.id === id);
+            const container = document.getElementById('boutiquesInlineContainer');
+            const fields = container.querySelectorAll(`[data-id="${id}"]`);
+            const updated = {};
+            fields.forEach(el => {
+                const field = el.getAttribute('data-field');
+                if (!field) return;
+                updated[field] = el.value;
+            });
+
+            if (isDefault) {
+                // Save overrides for default boutique (keyed by original default name)
+                const base = defaults.find(d => d.id === id) || {};
+                let overrides = {};
+                try { overrides = JSON.parse(localStorage.getItem('boutiqueOverrides') || '{}'); } catch (_) { overrides = {}; }
+                const key = base.name || id;
+                overrides[key] = {
+                    name: (updated.name !== undefined ? updated.name : base.name) || base.name || '',
+                    location: updated.location || base.location || '',
+                    hours: updated.hours || base.hours || '',
+                    category: updated.category || base.category || 'divers',
+                    image: updated.image || base.image || '',
+                    status: updated.status || base.status || 'online',
+                    rating: updated.rating || base.rating || 3,
+                    description: (updated.description !== undefined ? updated.description : base.description) || ''
+                };
+                localStorage.setItem('boutiqueOverrides', JSON.stringify(overrides));
+                alert('Modifications enregistrées pour la boutique par défaut.');
+            } else {
+                // Update existing custom
+                const items = getBoutiques();
+                const idx = items.findIndex(x => x.id === id);
+                if (idx !== -1) {
+                    items[idx] = { ...items[idx], ...updated };
+                    saveBoutiques(items);
+                    alert('Boutique personnalisée mise à jour.');
+                }
+            }
+
+            // Hide editor and refresh list
+            const editor = container.querySelector(`[data-editor-for="${id}"]`);
+            if (editor) editor.style.display = 'none';
+            renderBoutiquesListInline();
+        }
+
+        function deleteBoutiqueInline(id) {
+            if (!confirm('Supprimer cette boutique ?')) return;
+            const items = getBoutiques().filter(b => b.id !== id);
+            saveBoutiques(items);
+            renderBoutiquesListInline();
+        }
+
+        function openManageBoutiquesModal() {
+            const modal = document.getElementById('manageBoutiquesModal');
+            const closeBtn = document.getElementById('closeManageBoutiques');
+            renderBoutiquesList();
+            modal.classList.add('show');
+            modal.setAttribute('aria-hidden', 'false');
+            function close() {
+                modal.classList.remove('show');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+            closeBtn.onclick = close;
+            modal.addEventListener('click', function(e){ if (e.target === modal) close(); });
+        }
+
+        function renderBoutiquesList() {
+            const container = document.getElementById('boutiquesListContainer');
+            const items = getBoutiques();
+            if (!items || items.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="bi bi-shop"></i><p>Aucune boutique personnalisée</p><small>Ajoutez-en via le formulaire ci-dessus</small></div>';
+                return;
+            }
+            container.innerHTML = '';
+            items.forEach((b) => {
+                const card = document.createElement('div');
+                card.className = 'boutique-item-card';
+                card.innerHTML = `
+                    <div class="boutique-item-grid">
+                        <div>
+                            <label class="form-label">Nom</label>
+                            <input class="form-control" value="${b.name || ''}" data-field="name" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Localisation</label>
+                            <input class="form-control" value="${b.location || ''}" data-field="location" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Heures</label>
+                            <input class="form-control" value="${b.hours || ''}" data-field="hours" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Catégorie</label>
+                            <input class="form-control" value="${b.category || ''}" data-field="category" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Image (URL)</label>
+                            <input class="form-control" value="${b.image || ''}" data-field="image" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Statut</label>
+                            <select class="form-select" data-field="status" data-id="${b.id}">
+                                <option value="online" ${b.status === 'online' ? 'selected' : ''}>En ligne</option>
+                                <option value="offline" ${b.status === 'offline' ? 'selected' : ''}>Hors ligne</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Note</label>
+                            <input type="number" min="1" max="5" step="1" class="form-control" value="${b.rating || ''}" data-field="rating" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Description</label>
+                            <input class="form-control" value="${b.description || ''}" data-field="description" data-id="${b.id}">
+                        </div>
+                    </div>
+                    <div class="boutique-item-actions">
+                        <button class="btn-save-boutique" data-action="save" data-id="${b.id}"><i class="bi bi-check2-circle"></i> Enregistrer</button>
+                        <button class="btn-delete-boutique" data-action="delete" data-id="${b.id}"><i class="bi bi-trash"></i> Supprimer</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            // Attach handlers
+            container.querySelectorAll('[data-action="save"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    saveBoutiqueEdits(id);
+                });
+            });
+            container.querySelectorAll('[data-action="delete"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    deleteBoutique(id);
+                });
+            });
+        }
+
+        function saveBoutiqueEdits(id) {
+            const items = getBoutiques();
+            const idx = items.findIndex(x => x.id === id);
+            if (idx === -1) return;
+            const container = document.getElementById('boutiquesListContainer');
+            const fields = container.querySelectorAll(`[data-id="${id}"]`);
+            const updated = { ...items[idx] };
+            fields.forEach(el => {
+                const field = el.getAttribute('data-field');
+                if (!field) return;
+                if (el.tagName === 'SELECT') {
+                    updated[field] = el.value;
+                } else {
+                    updated[field] = el.value;
+                }
+            });
+            items[idx] = updated;
+            saveBoutiques(items);
+            alert('Boutique enregistrée.');
+        }
+
+        function deleteBoutique(id) {
+            if (!confirm('Supprimer cette boutique ?')) return;
+            const items = getBoutiques().filter(b => b.id !== id);
+            saveBoutiques(items);
+            renderBoutiquesList();
+        }
     </script>
+    <!-- Modal Gestion Boutiques -->
+    <div id="manageBoutiquesModal" class="modal-backdrop-custom" aria-hidden="true">
+        <div class="modal-container-custom" role="dialog" aria-modal="true">
+            <div class="modal-header-custom">
+                <div class="modal-title-custom"><i class="bi bi-gear"></i> Gérer les boutiques</div>
+                <button type="button" class="modal-close-btn" id="closeManageBoutiques">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <div id="boutiquesListContainer"></div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

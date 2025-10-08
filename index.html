@@ -516,6 +516,9 @@
                             <a class="nav-link click-scroll" href="Ourteams.html">Equipe</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link click-scroll" href="offre.html">Offre</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link click-scroll" href="admin-login.html">Admin</a>
                         </li>
                     
@@ -1118,11 +1121,35 @@
         <script src="js/custom.js"></script>
         <script src="js/analytics.js"></script>
         <script src="js/activity-simulator.js"></script>
-        <script src="js/ai-agent-simple.js"></script>
-        <script src="js/ai-agent-test.js"></script>
-        <script src="js/ai-agent-manual.js"></script>
+        
         <script>
             document.addEventListener("DOMContentLoaded", function() {
+                // Appliquer l'état du lien Offre depuis admin-dashboard
+                const offreLink = document.querySelector('a.nav-link.click-scroll[href="offre.html"]') || Array.from(document.querySelectorAll('a.nav-link.click-scroll')).find(a => (a.getAttribute('href') || '').toLowerCase().includes('offre.html'));
+                const offreItem = offreLink ? offreLink.closest('li.nav-item') : null;
+                function applyOffreStateFromStorage() {
+                    const saved = localStorage.getItem('offreLinkEnabled');
+                    const enabled = saved === null ? true : saved === 'true';
+                    if (!offreLink) return;
+                    const target = offreItem || offreLink;
+                    if (enabled) {
+                        target.style.display = '';
+                        offreLink.classList.remove('disabled');
+                        offreLink.setAttribute('aria-disabled', 'false');
+                        offreLink.title = '';
+                    } else {
+                        target.style.display = 'none';
+                        offreLink.classList.add('disabled');
+                        offreLink.setAttribute('aria-disabled', 'true');
+                        offreLink.title = 'Offre désactivée';
+                    }
+                }
+                applyOffreStateFromStorage();
+                window.addEventListener('storage', function(e) {
+                    if (e.key === 'offreLinkEnabled') {
+                        applyOffreStateFromStorage();
+                    }
+                });
                 const contactForm = document.getElementById("contactForm");
                 
                 if (contactForm) {

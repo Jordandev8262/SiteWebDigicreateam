@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DigiOnlineB-Boutique</title>
+  <title>DigiOnline-Boutique</title>
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/bootstrap-icons.css" rel="stylesheet">
   <link rel="shortcut icon" href="favicon.png">
@@ -433,7 +433,7 @@
     <div class="container">
       <nav class="navbar navbar-expand-lg">
         <a class="navbar-brand" href="index.html">
-          <i class="bi bi-shop"></i> DigiCreateam
+          <i class="bi bi-shop"></i> DigiOnline
         </a>
         <div class="navbar-nav ms-auto">
           <a class="nav-link" href="index.html">
@@ -468,6 +468,8 @@
         </div>
       </div>
     </div>
+
+    
 
     <!-- Filtres par catégorie -->
     <div class="filters-container">
@@ -1005,6 +1007,307 @@
           this.style.transform = 'translateY(0) scale(1)';
         });
       });
+    });
+
+    // --- Espace réservé: création et suppression de boutiques ---
+    const STORAGE_KEY = 'boutiquesCustom';
+
+    function getStoredBoutiques() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveStoredBoutiques(items) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    }
+
+    function normalizeText(value) {
+      return (value || '').toString().trim().toLowerCase();
+    }
+
+    function pageHasBoutique(name, location) {
+      const n = normalizeText(name);
+      const l = normalizeText(location);
+      const cards = document.querySelectorAll('.card');
+      for (const card of cards) {
+        const title = normalizeText(card.querySelector('.card-title')?.textContent || '');
+        const loc = normalizeText(card.querySelector('.card-location')?.textContent || '');
+        if (title === n && (loc === l || loc.includes(l))) return true;
+      }
+      return false;
+    }
+
+    function listHasBoutique(items, name, location) {
+      const n = normalizeText(name);
+      const l = normalizeText(location);
+      return items.some(it => normalizeText(it.name) === n && normalizeText(it.location) === l);
+    }
+
+    function isDuplicateBoutique(candidate) {
+      const items = getStoredBoutiques();
+      // Check against defaults already in DOM and existing stored items
+      return pageHasBoutique(candidate.name, candidate.location) || listHasBoutique(items, candidate.name, candidate.location);
+    }
+
+    function createCardElement(data) {
+      const ratingStars = Math.max(1, Math.min(5, Number(data.rating) || 3));
+      const starHtml = Array.from({ length: 5 }).map((_, i) => i < ratingStars ? '<span class="star">&#9733;</span>' : '<span class="star">&#9734;</span>').join('');
+      const statusClass = data.status === 'offline' ? 'offline' : 'online';
+      const statusLabel = data.status === 'offline' ? 'Hors ligne' : 'En ligne';
+      const imageSrc = (data.imageDataUrl && data.imageDataUrl.trim() !== '') ? data.imageDataUrl : (data.image && data.image.trim() !== '' ? data.image.trim() : (data.category === 'electronique' ? 'images/electro.jpg' : 'images/Presentation .jpg'));
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'card';
+      wrapper.setAttribute('data-category', data.category);
+      wrapper.setAttribute('data-custom', '1');
+      wrapper.innerHTML = `
+        <div class="card-image-container">
+          <img src="${imageSrc}" alt="${data.name} Boutique">
+          <div class="card-status ${statusClass}">${statusLabel}</div>
+          <div class="card-favorite">
+            <i class="bi bi-heart"></i>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <h5 class="card-title">${data.name}</h5>
+            <div class="card-rating">
+              <div class="star-rating">${starHtml}</div>
+              <span class="rating-text">${ratingStars}.0</span>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="card-location"><i class="bi bi-geo-alt"></i> ${data.location}</div>
+            <div class="card-hours"><i class="bi bi-clock"></i> ${data.hours}</div>
+          </div>
+          <div class="card-category">${data.category === 'electronique' ? 'Électronique' : 'Divers'}</div>
+          <div class="card-description">${data.description || ''}</div>
+          <div class="card-actions">
+            <button class="btn btn-primary"><i class="bi bi-shop"></i> Visiter</button>
+            <button class="btn btn-outline"><i class="bi bi-telephone"></i> Contacter</button>
+          </div>
+        </div>
+      `;
+      return wrapper;
+    }
+
+    function renderStoredBoutiques() {
+      const productGrid = document.getElementById('productGrid');
+      const items = getStoredBoutiques();
+      items.forEach(item => {
+        // Skip rendering if a card with same name + location already exists
+        if (pageHasBoutique(item.name, item.location)) return;
+        const card = createCardElement(item);
+        productGrid.appendChild(card);
+      });
+      performSearch();
+    }
+
+    function getDefaultOverrides() {
+      try {
+        return JSON.parse(localStorage.getItem('boutiqueOverrides') || '{}');
+      } catch (_) {
+        return {};
+      }
+    }
+
+    function applyOverridesToDefaultCards() {
+      const overrides = getDefaultOverrides();
+      Object.entries(overrides).forEach(([originalName, data]) => {
+        const selector = `.card:not([data-custom="1"]) [data-original-name="${originalName}"]`;
+        let titleEl = document.querySelector(selector);
+        if (!titleEl) {
+          // fallback: try to find by text content if no original tag
+          const candidates = Array.from(document.querySelectorAll('.card:not([data-custom="1"]) .card-title'));
+          titleEl = candidates.find(el => (el.textContent || '').trim() === originalName) || null;
+          if (titleEl) titleEl.setAttribute('data-original-name', originalName);
+        }
+        if (!titleEl) return;
+        const card = titleEl.closest('.card');
+
+        // Title (optional) - we display new name but keep data-original-name for stable lookup
+        if (data.name !== undefined) titleEl.textContent = data.name || '';
+
+        // Location
+        const locEl = card.querySelector('.card-location');
+        if (locEl && data.location) {
+          locEl.innerHTML = '<i class="bi bi-geo-alt"></i> ' + data.location;
+        }
+
+        // Hours
+        const hoursEl = card.querySelector('.card-hours');
+        if (hoursEl && data.hours) {
+          hoursEl.innerHTML = '<i class="bi bi-clock"></i> ' + data.hours;
+        }
+
+        // Category
+        const catEl = card.querySelector('.card-category');
+        if (catEl && data.category) {
+          catEl.textContent = data.category === 'electronique' ? 'Électronique' : 'Divers';
+          card.setAttribute('data-category', data.category);
+        }
+
+        // Image
+        const imgEl = card.querySelector('.card-image-container img');
+        if (imgEl && data.image) {
+          imgEl.src = data.image;
+          imgEl.alt = ((data.name !== undefined ? data.name : originalName) || '') + ' Boutique';
+        }
+
+        // Status
+        const statusEl = card.querySelector('.card-status');
+        if (statusEl && data.status) {
+          statusEl.classList.remove('online', 'offline');
+          if (data.status === 'offline') {
+            statusEl.classList.add('offline');
+            statusEl.textContent = 'Hors ligne';
+          } else {
+            statusEl.classList.add('online');
+            statusEl.textContent = 'En ligne';
+          }
+        }
+
+        // Rating
+        if (data.rating) {
+          const rating = Math.max(1, Math.min(5, Number(data.rating) || 3));
+          const starHtml = Array.from({ length: 5 }).map((_, i) => i < rating ? '<span class="star">&#9733;</span>' : '<span class="star">&#9734;</span>').join('');
+          const starWrap = card.querySelector('.star-rating');
+          if (starWrap) starWrap.innerHTML = starHtml;
+          const ratingText = card.querySelector('.rating-text');
+          if (ratingText) ratingText.textContent = rating.toString();
+        }
+
+        // Description
+        const descEl = card.querySelector('.card-description');
+        if (descEl && (data.description !== undefined)) {
+          descEl.textContent = data.description || '';
+        }
+      });
+
+      // Re-apply search filtering because categories may have changed
+      performSearch();
+    }
+
+    function refreshStoredBoutiques() {
+      const productGrid = document.getElementById('productGrid');
+      // Remove existing custom cards
+      productGrid.querySelectorAll('.card[data-custom="1"]').forEach(el => el.remove());
+      // Re-render from storage, skipping duplicates with defaults
+      renderStoredBoutiques();
+    }
+
+    function clearAdminForm() {
+      ['newName','newLocation','newHours','newImage','newDescription','newRating'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      const cat = document.getElementById('newCategory');
+      if (cat) cat.value = 'divers';
+      const st = document.getElementById('newStatus');
+      if (st) st.value = 'online';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Render previously created boutiques
+      renderStoredBoutiques();
+      // Tag default cards with original names for stable lookup
+      document.querySelectorAll('.card:not([data-custom="1"]) .card-title').forEach(el => {
+        const name = (el.textContent || '').trim();
+        if (name && !el.hasAttribute('data-original-name')) {
+          el.setAttribute('data-original-name', name);
+        }
+      });
+      // Apply overrides to default cards
+      applyOverridesToDefaultCards();
+
+      // Toggle admin mode
+      const adminToggle = document.getElementById('adminManageToggle');
+      if (adminToggle) {
+        adminToggle.addEventListener('change', function() {
+          if (this.checked) {
+            document.body.classList.add('admin-mode');
+          } else {
+            document.body.classList.remove('admin-mode');
+          }
+        });
+      }
+
+      // Create boutique
+      const createBtn = document.getElementById('createBoutiqueBtn');
+      if (createBtn) {
+        createBtn.addEventListener('click', function() {
+          const data = {
+            id: 'b_' + Date.now(),
+            name: (document.getElementById('newName').value || '').trim(),
+            location: (document.getElementById('newLocation').value || '').trim(),
+            hours: (document.getElementById('newHours').value || '').trim(),
+            category: document.getElementById('newCategory').value,
+            image: (document.getElementById('newImage').value || '').trim(),
+            status: document.getElementById('newStatus').value,
+            rating: document.getElementById('newRating').value,
+            description: (document.getElementById('newDescription').value || '').trim()
+          };
+
+          if (!data.name || !data.location || !data.hours) {
+            alert('Veuillez renseigner au minimum: Nom, Localisation et Heures.');
+            return;
+          }
+
+          // Prevent duplicates by name + location
+          if (isDuplicateBoutique(data)) {
+            alert('Cette boutique existe déjà (même nom et localisation).');
+            return;
+          }
+
+          const items = getStoredBoutiques();
+          items.push(data);
+          saveStoredBoutiques(items);
+
+          // Render only if it is not duplicate on page (should not be due to check)
+          if (!pageHasBoutique(data.name, data.location)) {
+            const grid = document.getElementById('productGrid');
+            grid.appendChild(createCardElement(data));
+          }
+          clearAdminForm();
+          performSearch();
+          alert('Boutique ajoutée.');
+        });
+      }
+
+      // Clear form
+      const clearBtn = document.getElementById('clearFormBtn');
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+          clearAdminForm();
+        });
+      }
+
+      // Clear all custom boutiques
+      const clearCustomBtn = document.getElementById('clearCustomBtn');
+      if (clearCustomBtn) {
+        clearCustomBtn.addEventListener('click', function() {
+          if (confirm('Supprimer toutes les boutiques ajoutées (personnalisées) ?')) {
+            saveStoredBoutiques([]);
+            document.querySelectorAll('.card[data-custom="1"]').forEach(el => el.remove());
+            performSearch();
+          }
+        });
+      }
+
+      // Suppression désactivée sur cette page
+    });
+
+    // Synchronize with admin edits via storage events
+    window.addEventListener('storage', function(e) {
+      if (e.key === STORAGE_KEY) {
+        refreshStoredBoutiques();
+      }
+      if (e.key === 'boutiqueOverrides') {
+        applyOverridesToDefaultCards();
+      }
     });
   </script>
   
