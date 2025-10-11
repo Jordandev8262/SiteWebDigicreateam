@@ -27,8 +27,35 @@
             display: flex;
             align-items: center;
             box-shadow: 0 25px 60px rgba(0,0,0,.12);
-            background: #1f2230 url('images/recrute.jpg') center/cover no-repeat;
+            background: #1f2230;
             isolation: isolate;
+            margin-bottom: -70px;
+        }
+        
+        .hero-image-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        
+        .hero-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        
+        .hero-image.active {
+            opacity: 1;
         }
         .offre-hero::before {
             content: '';
@@ -128,6 +155,11 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="offre-hero">
+                                <div class="hero-image-slider">
+                                    <div class="hero-image active" style="background-image: url('images/recrute.jpg');"></div>
+                                    <div class="hero-image" style="background-image: url('images/transite1.jpg');"></div>
+                                    <div class="hero-image" style="background-image: url('images/Transite3.jpg');"></div>
+                                </div>
                                 <div class="hero-content col-lg-8 col-12">
                                     <div class="page-gradient-title mb-0">
                                         <h2 class="mb-0 d-flex align-items-center" style="gap:10px;">
@@ -290,7 +322,29 @@
         <script src="js/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script>
+        // Fonction pour la transition automatique des images
+        function initImageSlider() {
+            const images = document.querySelectorAll('.hero-image');
+            let currentIndex = 0;
+            
+            function showNextImage() {
+                // Retirer la classe active de l'image actuelle
+                images[currentIndex].classList.remove('active');
+                
+                // Passer à l'image suivante
+                currentIndex = (currentIndex + 1) % images.length;
+                
+                // Ajouter la classe active à la nouvelle image
+                images[currentIndex].classList.add('active');
+            }
+            
+            // Démarrer la transition automatique toutes les 3 secondes
+            setInterval(showNextImage, 3000);
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser le slider d'images
+            initImageSlider();
             // Appliquer le titre d'offre depuis le stockage
             (function(){
                 var titleEl = document.getElementById('offreTitleText');

@@ -140,12 +140,33 @@
       transform: translateY(-2px);
     }
 
+    /* Sections de catégories */
+    .category-section {
+      margin-bottom: 3rem;
+    }
+
+    .category-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #14B789;
+      margin-bottom: 1.5rem;
+      padding: 1rem 0;
+      border-bottom: 3px solid #14B789;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .category-title i {
+      font-size: 1.5rem;
+    }
+
     /* Grille de produits */
     .product-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 2rem;
-      margin-top: 2rem;
+      margin-top: 1rem;
     }
 
     /* Cartes produits redesignées */
@@ -370,6 +391,22 @@
       transform: translateY(-2px);
     }
 
+    /* Styles pour les boutons désactivés */
+    .card-actions .btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+      background: #ccc !important;
+      color: #666 !important;
+      border-color: #ccc !important;
+      transform: none !important;
+    }
+
+    .card-actions .btn.disabled:hover {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
     /* Navigation home */
     .home-link {
       color: #14B789;
@@ -479,9 +516,15 @@
     </div>
 
     <!-- Grille de produits -->
-    <div class="product-grid" id="productGrid">
-      <!-- Boutique DUMIYA -->
-      <div class="card" data-category="divers">
+    <div id="productGrid">
+      <!-- Section Divers -->
+      <div class="category-section" id="divers-section">
+        <h2 class="category-title">
+          <i class="bi bi-grid-3x3-gap"></i> Boutiques Divers
+        </h2>
+        <div class="product-grid">
+          <!-- Boutique DUMIYA -->
+          <div class="card" data-category="divers">
         <div class="card-image-container">
           <img src="images/Presentation .jpg" alt="DUMIYA Boutique">
           <div class="card-status online">En ligne</div>
@@ -629,8 +672,16 @@
           </div>
         </div>
       </div>
+        </div>
+      </div>
 
-      <!-- Boutique MENDO -->
+      <!-- Section Électronique -->
+      <div class="category-section" id="electronique-section">
+        <h2 class="category-title">
+          <i class="bi bi-cpu"></i> Boutiques Électronique
+        </h2>
+        <div class="product-grid">
+          <!-- Boutique MENDO -->
       <div class="card" data-category="electronique">
         <div class="card-image-container">
           <img src="images/ordi.jpg" alt="MENDO Boutique">
@@ -779,6 +830,8 @@
           </div>
         </div>
       </div>
+        </div>
+      </div>
     </div>
   </div>
 </body>
@@ -791,6 +844,14 @@
     function performSearch() {
       const searchValue = currentSearch.toLowerCase().trim();
       const cards = document.querySelectorAll('.card');
+      const sections = document.querySelectorAll('.category-section');
+      
+      // Masquer toutes les sections d'abord
+      sections.forEach(section => {
+        section.style.display = 'none';
+      });
+      
+      let hasVisibleCards = false;
       
       cards.forEach(card => {
         const title = card.querySelector('.card-title').textContent.toLowerCase();
@@ -809,6 +870,13 @@
         if (matchesSearch && matchesFilter) {
           card.style.display = 'block';
           card.style.opacity = '1';
+          hasVisibleCards = true;
+          
+          // Afficher la section parente
+          const section = card.closest('.category-section');
+          if (section) {
+            section.style.display = 'block';
+          }
         } else {
           card.style.display = 'none';
           card.style.opacity = '0';
@@ -958,8 +1026,33 @@
       }
     });
 
+    // Fonction pour gérer l'état des boutons selon le statut de la boutique
+    function updateButtonStates() {
+      document.querySelectorAll('.card').forEach(card => {
+        const statusElement = card.querySelector('.card-status');
+        const actionButtons = card.querySelectorAll('.card-actions .btn');
+        
+        if (statusElement && actionButtons.length > 0) {
+          const isOffline = statusElement.classList.contains('offline');
+          
+          actionButtons.forEach(btn => {
+            if (isOffline) {
+              btn.classList.add('disabled');
+              btn.setAttribute('disabled', 'true');
+            } else {
+              btn.classList.remove('disabled');
+              btn.removeAttribute('disabled');
+            }
+          });
+        }
+      });
+    }
+
     // Fonctionnalités des cartes de boutique
     document.addEventListener('DOMContentLoaded', function() {
+      // Appliquer l'état des boutons au chargement de la page
+      updateButtonStates();
+      
       // Gestion des favoris
       document.querySelectorAll('.card-favorite').forEach(favoriteBtn => {
         favoriteBtn.addEventListener('click', function(e) {
@@ -982,6 +1075,13 @@
       document.querySelectorAll('.card-actions .btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
+          
+          // Vérifier si le bouton est désactivé
+          if (this.classList.contains('disabled') || this.hasAttribute('disabled')) {
+            e.preventDefault();
+            return;
+          }
+          
           const card = this.closest('.card');
           const boutiqueName = card.querySelector('.card-title').textContent;
           
@@ -1086,8 +1186,8 @@
           <div class="card-category">${data.category === 'electronique' ? 'Électronique' : 'Divers'}</div>
           <div class="card-description">${data.description || ''}</div>
           <div class="card-actions">
-            <button class="btn btn-primary"><i class="bi bi-shop"></i> Visiter</button>
-            <button class="btn btn-outline"><i class="bi bi-telephone"></i> Contacter</button>
+            <button class="btn btn-primary" ${statusClass === 'offline' ? 'disabled' : ''}><i class="bi bi-shop"></i> Visiter</button>
+            <button class="btn btn-outline" ${statusClass === 'offline' ? 'disabled' : ''}><i class="bi bi-telephone"></i> Contacter</button>
           </div>
         </div>
       `;
@@ -1095,14 +1195,25 @@
     }
 
     function renderStoredBoutiques() {
-      const productGrid = document.getElementById('productGrid');
       const items = getStoredBoutiques();
       items.forEach(item => {
         // Skip rendering if a card with same name + location already exists
         if (pageHasBoutique(item.name, item.location)) return;
         const card = createCardElement(item);
-        productGrid.appendChild(card);
+        
+        // Trouver la bonne section selon la catégorie
+        const sectionId = item.category === 'electronique' ? 'electronique-section' : 'divers-section';
+        const section = document.getElementById(sectionId);
+        
+        if (section) {
+          const productGrid = section.querySelector('.product-grid');
+          if (productGrid) {
+            productGrid.appendChild(card);
+          }
+        }
       });
+      // Appliquer l'état des boutons après le rendu
+      updateButtonStates();
       performSearch();
     }
 
@@ -1187,6 +1298,8 @@
         }
       });
 
+      // Appliquer l'état des boutons après les modifications
+      updateButtonStates();
       // Re-apply search filtering because categories may have changed
       performSearch();
     }
@@ -1268,8 +1381,20 @@
 
           // Render only if it is not duplicate on page (should not be due to check)
           if (!pageHasBoutique(data.name, data.location)) {
-            const grid = document.getElementById('productGrid');
-            grid.appendChild(createCardElement(data));
+            const card = createCardElement(data);
+            
+            // Trouver la bonne section selon la catégorie
+            const sectionId = data.category === 'electronique' ? 'electronique-section' : 'divers-section';
+            const section = document.getElementById(sectionId);
+            
+            if (section) {
+              const productGrid = section.querySelector('.product-grid');
+              if (productGrid) {
+                productGrid.appendChild(card);
+              }
+            }
+            // Appliquer l'état des boutons après l'ajout
+            updateButtonStates();
           }
           clearAdminForm();
           performSearch();

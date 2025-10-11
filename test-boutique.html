@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Boutique - Fonctionnalité Désactivation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f9f9f9;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status.online {
+            background: #2ecc71;
+            color: white;
+        }
+        .status.offline {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn {
+            padding: 8px 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background: #14B789;
+            color: white;
+        }
+        .btn-outline {
+            background: transparent;
+            color: #14B789;
+            border: 2px solid #14B789;
+        }
+        .btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+            background: #ccc !important;
+            color: #666 !important;
+            border-color: #ccc !important;
+        }
+        .test-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Test de la Fonctionnalité de Désactivation des Boutons</h1>
+        
+        <h2>Boutique En Ligne (DUMIYA)</h2>
+        <div class="test-card" id="online-card">
+            <h3>DUMIYA</h3>
+            <span class="status online">En ligne</span>
+            <div style="margin-top: 10px;">
+                <button class="btn btn-primary" onclick="testButton('online', 'Visiter')">
+                    Visiter
+                </button>
+                <button class="btn btn-outline" onclick="testButton('online', 'Contacter')">
+                    Contacter
+                </button>
+            </div>
+        </div>
+
+        <h2>Boutique Hors Ligne (MATOS)</h2>
+        <div class="test-card" id="offline-card">
+            <h3>MATOS</h3>
+            <span class="status offline">Hors ligne</span>
+            <div style="margin-top: 10px;">
+                <button class="btn btn-primary" onclick="testButton('offline', 'Visiter')">
+                    Visiter
+                </button>
+                <button class="btn btn-outline" onclick="testButton('offline', 'Contacter')">
+                    Contacter
+                </button>
+            </div>
+        </div>
+
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        // Fonction pour gérer l'état des boutons selon le statut de la boutique
+        function updateButtonStates() {
+            document.querySelectorAll('.test-card').forEach(card => {
+                const statusElement = card.querySelector('.status');
+                const actionButtons = card.querySelectorAll('.btn');
+                
+                if (statusElement && actionButtons.length > 0) {
+                    const isOffline = statusElement.classList.contains('offline');
+                    
+                    actionButtons.forEach(btn => {
+                        if (isOffline) {
+                            btn.classList.add('disabled');
+                            btn.setAttribute('disabled', 'true');
+                        } else {
+                            btn.classList.remove('disabled');
+                            btn.removeAttribute('disabled');
+                        }
+                    });
+                }
+            });
+        }
+
+        function testButton(status, action) {
+            const resultsDiv = document.getElementById('test-results');
+            
+            if (status === 'offline') {
+                resultsDiv.innerHTML = `
+                    <div class="test-result error">
+                        ❌ ERREUR: Le bouton "${action}" de la boutique hors ligne devrait être désactivé !
+                    </div>
+                `;
+            } else {
+                resultsDiv.innerHTML = `
+                    <div class="test-result success">
+                        ✅ SUCCÈS: Le bouton "${action}" de la boutique en ligne fonctionne correctement !
+                    </div>
+                `;
+            }
+        }
+
+        // Appliquer l'état des boutons au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateButtonStates();
+            
+            // Afficher les résultats du test
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = `
+                <div class="test-result success">
+                    ✅ Test initialisé ! Les boutons des boutiques hors ligne devraient être désactivés (grisés).
+                    <br><br>
+                    <strong>Instructions de test :</strong>
+                    <br>• Cliquez sur les boutons de la boutique "En ligne" - ils devraient fonctionner
+                    <br>• Cliquez sur les boutons de la boutique "Hors ligne" - ils ne devraient pas réagir
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
