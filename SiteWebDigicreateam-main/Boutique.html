@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DigiOnline-Boutique</title>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" rel="stylesheet">
+  <link rel="shortcut icon" href="favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* Header Professionnel */
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: #14B789 !important;
+      text-decoration: none;
+    }
+
+    .nav-link {
+      color: #333 !important;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-link:hover {
+      color: #14B789 !important;
+    }
+
+    /* Container principal */
+    .main-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      margin: 2rem auto;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      max-width: 1400px;
+    }
+
+    /* Titre principal */
+    .main-title {
+      text-align: center;
+      margin-bottom: 3rem;
+      font-weight: 700;
+      color: #14B789;
+      font-size: 2.5rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Barre de recherche améliorée */
+    .search-container {
+      background: white;
+      border-radius: 15px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .search-input {
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .search-input:focus {
+      border-color: #14B789;
+      box-shadow: 0 0 0 3px rgba(20, 183, 137, 0.1);
+      outline: none;
+    }
+
+    .search-input::placeholder {
+      color: #999;
+      font-style: italic;
+    }
+
+    /* Message d'aucun résultat */
+    .alert-info {
+      background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+      border: none;
+      border-radius: 15px;
+      color: #1976d2;
+    }
+
+    .alert-info i {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #14B789;
+    }
+
+    /* Filtres */
+    .filters-container {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: white;
+      border: 2px solid #e1e5e9;
+      border-radius: 25px;
+      padding: 8px 20px;
+      font-weight: 500;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background: #14B789;
+      border-color: #14B789;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    /* Sections de catégories */
+    .category-section {
+      margin-bottom: 3rem;
+    }
+
+    .category-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #14B789;
+      margin-bottom: 1.5rem;
+      padding: 1rem 0;
+      border-bottom: 3px solid #14B789;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .category-title i {
+      font-size: 1.5rem;
+    }
+
+    /* Grille de produits */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    /* Cartes produits redesignées */
+    .card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: none;
+      position: relative;
+      min-height: 500px;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #14B789, #667eea);
+    }
+
+    /* Container d'image avec overlay */
+    .card-image-container {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover img {
+      transform: scale(1.05);
+    }
+
+    /* Statut en ligne/hors ligne */
+    .card-status {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-status.online {
+      background: #2ecc71;
+      color: white;
+    }
+
+    .card-status.offline {
+      background: #e74c3c;
+      color: white;
+    }
+
+    /* Bouton favori */
+    .card-favorite {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 35px;
+      height: 35px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .card-favorite:hover {
+      background: #ff6b6b;
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .card-favorite i {
+      font-size: 1.1rem;
+    }
+
+    /* Corps de la carte */
+    .card-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - 220px);
+    }
+
+    /* En-tête de la carte */
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #333;
+      margin: 0;
+    }
+
+    /* Rating amélioré */
+    .card-rating {
+      text-align: right;
+    }
+
+    .rating-text {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .star-rating {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 0.25rem;
+    }
+
+    .star {
+      color: #ffd700;
+      font-size: 1rem;
+    }
+
+    /* Informations de la carte */
+    .card-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-location, .card-hours {
+      color: #666;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-location i, .card-hours i {
+      color: #14B789;
+    }
+
+    .card-category {
+      background: linear-gradient(135deg, #14B789, #667eea);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: inline-block;
+      margin-bottom: 1rem;
+      align-self: flex-start;
+    }
+
+    /* Description */
+    .card-description {
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
+
+    /* Actions de la carte */
+    .card-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: auto;
+    }
+
+    .card-actions .btn {
+      flex: 1;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .card-actions .btn-primary {
+      background: linear-gradient(135deg, #14B789, #667eea);
+      color: white;
+      border: none;
+    }
+
+    .card-actions .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(20, 183, 137, 0.3);
+    }
+
+    .card-actions .btn-outline {
+      background: transparent;
+      color: #14B789;
+      border: 2px solid #14B789;
+    }
+
+    .card-actions .btn-outline:hover {
+      background: #14B789;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    /* Styles pour les boutons désactivés */
+    .card-actions .btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+      background: #ccc !important;
+      color: #666 !important;
+      border-color: #ccc !important;
+      transform: none !important;
+    }
+
+    .card-actions .btn.disabled:hover {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Navigation home */
+    .home-link {
+      color: #14B789;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .home-link:hover {
+      color: #667eea;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-container {
+        margin: 1rem;
+        padding: 1rem;
+      }
+
+      .main-title {
+        font-size: 2rem;
+      }
+
+      .product-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .filters-container {
+        justify-content: center;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+    .card:nth-child(4) { animation-delay: 0.4s; }
+    .card:nth-child(5) { animation-delay: 0.5s; }
+    .card:nth-child(6) { animation-delay: 0.6s; }
+  </style>
+</head>
+<body>
+  <!-- Header Professionnel -->
+  <header class="header">
+    <div class="container">
+      <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="index.html">
+          <i class="bi bi-shop"></i> DigiOnline
+        </a>
+        <div class="navbar-nav ms-auto">
+          <a class="nav-link" href="index.html">
+            <i class="bi bi-house"></i> Accueil
+          </a>
+          <a class="nav-link" href="admin-login.html">
+            <i class="bi bi-shield-lock"></i> Admin
+          </a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Container Principal -->
+  <div class="main-container">
+    <h1 class="main-title">
+      <i class="bi bi-shop"></i> Boutique en Ligne
+    </h1>
+
+    <!-- Barre de recherche et filtres -->
+    <div class="search-container">
+      <div class="row">
+        <div class="col-md-8">
+          <input type="text" class="search-input" id="searchInput" placeholder="Rechercher une boutique...">
+        </div>
+        <div class="col-md-4">
+          <select class="form-select" id="sortSelect">
+            <option value="name">Trier par nom</option>
+            <option value="rating">Trier par note</option>
+            <option value="location">Trier par localisation</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    
+
+    <!-- Filtres par catégorie -->
+    <div class="filters-container">
+      <button class="filter-btn active" data-filter="all">Tous</button>
+      <button class="filter-btn" data-filter="divers">Divers</button>
+      <button class="filter-btn" data-filter="electronique">Électronique</button>
+    </div>
+
+    <!-- Grille de produits -->
+    <div id="productGrid">
+      <!-- Section Divers -->
+      <div class="category-section" id="divers-section">
+        <h2 class="category-title">
+          <i class="bi bi-grid-3x3-gap"></i> Boutiques Divers
+        </h2>
+        <div class="product-grid">
+          <!-- Boutique DUMIYA -->
+          <div class="card" data-category="divers">
+        <div class="card-image-container">
+          <img src="images/Presentation .jpg" alt="DUMIYA Boutique">
+          <div class="card-status online">En ligne</div>
+          <div class="card-favorite">
+            <i class="bi bi-heart"></i>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <h5 class="card-title">DUMIYA</h5>
+            <div class="card-rating">
+              <div class="star-rating">
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9734;</span>
+                <span class="star">&#9734;</span>
+              </div>
+              <span class="rating-text">3.0 (24 avis)</span>
+            </div>
+          </div>
+          
+          <div class="card-info">
+            <div class="card-location">
+              <i class="bi bi-geo-alt"></i> Kinshasa, RDC
+            </div>
+            <div class="card-hours">
+              <i class="bi bi-clock"></i> 8h-18h
+            </div>
+          </div>
+          
+          <div class="card-category">Divers</div>
+          
+          <div class="card-description">
+            Boutique spécialisée dans les produits divers et variés pour tous vos besoins quotidiens.
+          </div>
+          
+          <div class="card-actions">
+            <button class="btn btn-primary">
+              <i class="bi bi-shop"></i> Visiter
+            </button>
+            <button class="btn btn-outline">
+              <i class="bi bi-telephone"></i> Contacter
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boutique KIKUU -->
+      <div class="card" data-category="divers">
+        <div class="card-image-container">
+          <img src="images/kikuu.jpg" alt="KIKUU Boutique">
+          <div class="card-status online">En ligne</div>
+          <div class="card-favorite">
+            <i class="bi bi-heart"></i>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <h5 class="card-title">KIKUU</h5>
+            <div class="card-rating">
+              <div class="star-rating">
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9734;</span>
+                <span class="star">&#9734;</span>
+                <span class="star">&#9734;</span>
+              </div>
+              <span class="rating-text">2.0 (18 avis)</span>
+            </div>
+          </div>
+          
+          <div class="card-info">
+            <div class="card-location">
+              <i class="bi bi-geo-alt"></i> Lubumbashi, RDC
+            </div>
+            <div class="card-hours">
+              <i class="bi bi-clock"></i> 9h-19h
+            </div>
+          </div>
+          
+          <div class="card-category">Divers</div>
+          
+          <div class="card-description">
+            Votre partenaire de confiance pour tous vos achats quotidiens avec un service de qualité.
+          </div>
+          
+          <div class="card-actions">
+            <button class="btn btn-primary">
+              <i class="bi bi-shop"></i> Visiter
+            </button>
+            <button class="btn btn-outline">
+              <i class="bi bi-telephone"></i> Contacter
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boutique STYLEBYDIVA -->
+      <div class="card" data-category="divers">
+        <div class="card-image-container">
+          <img src="images/divaboutique.jpg" alt="STYLEBYDIVA Boutique">
+          <div class="card-status online">En ligne</div>
+          <div class="card-favorite">
+            <i class="bi bi-heart"></i>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <h5 class="card-title">STYLEBYDIVA</h5>
+            <div class="card-rating">
+              <div class="star-rating">
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9734;</span>
+              </div>
+              <span class="rating-text">4.0 (32 avis)</span>
+            </div>
+          </div>
+          
+          <div class="card-info">
+            <div class="card-location">
+              <i class="bi bi-geo-alt"></i> Katanga, RDC
+            </div>
+            <div class="card-hours">
+              <i class="bi bi-clock"></i> 7h-20h
+            </div>
+          </div>
+          
+          <div class="card-category">Divers</div>
+          
+          <div class="card-description">
+            Boutique de mode et style pour tous vos besoins vestimentaires et accessoires tendance.
+          </div>
+          
+          <div class="card-actions">
+            <button class="btn btn-primary">
+              <i class="bi bi-shop"></i> Visiter
+            </button>
+            <button class="btn btn-outline">
+              <i class="bi bi-telephone"></i> Contacter
+            </button>
+          </div>
+        </div>
+      </div>
+        </div>
+      </div>
+
+      <!-- Section Électronique -->
+      <div class="category-section" id="electronique-section">
+        <h2 class="category-title">
+          <i class="bi bi-cpu"></i> Boutiques Électronique
+        </h2>
+        <div class="product-grid">
+          <!-- Boutique MENDO -->
+      <div class="card" data-category="electronique">
+        <div class="card-image-container">
+          <img src="images/ordi.jpg" alt="MENDO Boutique">
+          <div class="card-status online">En ligne</div>
+          <div class="card-favorite">
+            <i class="bi bi-heart"></i>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <h5 class="card-title">MENDO</h5>
+            <div class="card-rating">
+              <div class="star-rating">
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9734;</span>
+              </div>
+              <span class="rating-text">4.0 (28 avis)</span>
+            </div>
+          </div>
+          
+          <div class="card-info">
+            <div class="card-location">
+              <i class="bi bi-geo-alt"></i> Kinshasa, RDC
+            </div>
+            <div class="card-hours">
+              <i class="bi bi-clock"></i> 8h-17h
+            </div>
+          </div>
+          
+          <div class="card-category">Électronique</div>
+          
+          <div class="card-description">
+            Spécialiste en équipements informatiques et électroniques de haute qualité.
+          </div>
+          
+          <div class="card-actions">
+            <button class="btn btn-primary">
+              <i class="bi bi-shop"></i> Visiter
+            </button>
+            <button class="btn btn-outline">
+              <i class="bi bi-telephone"></i> Contacter
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boutique WAKIKI -->
+      <div class="card" data-category="electronique">
+        <div class="card-image-container">
+          <img src="images/drone.jpg" alt="WAKIKI Boutique">
+          <div class="card-status online">En ligne</div>
+          <div class="card-favorite">
+            <i class="bi bi-heart"></i>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <h5 class="card-title">WAKIKI</h5>
+            <div class="card-rating">
+              <div class="star-rating">
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9734;</span>
+              </div>
+              <span class="rating-text">4.0 (15 avis)</span>
+            </div>
+          </div>
+          
+          <div class="card-info">
+            <div class="card-location">
+              <i class="bi bi-geo-alt"></i> Matadi, RDC
+            </div>
+            <div class="card-hours">
+              <i class="bi bi-clock"></i> 9h-18h
+            </div>
+          </div>
+          
+          <div class="card-category">Électronique</div>
+          
+          <div class="card-description">
+            Technologies avancées et équipements électroniques pour professionnels et particuliers.
+          </div>
+          
+          <div class="card-actions">
+            <button class="btn btn-primary">
+              <i class="bi bi-shop"></i> Visiter
+            </button>
+            <button class="btn btn-outline">
+              <i class="bi bi-telephone"></i> Contacter
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boutique MATOS -->
+      <div class="card" data-category="electronique">
+        <div class="card-image-container">
+          <img src="images/electro.jpg" alt="MATOS Boutique">
+          <div class="card-status offline">Hors ligne</div>
+          <div class="card-favorite">
+            <i class="bi bi-heart"></i>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <h5 class="card-title">MATOS</h5>
+            <div class="card-rating">
+              <div class="star-rating">
+                <span class="star">&#9733;</span>
+                <span class="star">&#9734;</span>
+                <span class="star">&#9734;</span>
+                <span class="star">&#9734;</span>
+                <span class="star">&#9734;</span>
+              </div>
+              <span class="rating-text">1.0 (8 avis)</span>
+            </div>
+          </div>
+          
+          <div class="card-info">
+            <div class="card-location">
+              <i class="bi bi-geo-alt"></i> Kinshasa, RDC
+            </div>
+            <div class="card-hours">
+              <i class="bi bi-clock"></i> 10h-16h
+            </div>
+          </div>
+          
+          <div class="card-category">Électronique</div>
+          
+          <div class="card-description">
+            Matériel électronique et composants pour réparations et projets DIY.
+          </div>
+          
+          <div class="card-actions">
+            <button class="btn btn-primary">
+              <i class="bi bi-shop"></i> Visiter
+            </button>
+            <button class="btn btn-outline">
+              <i class="bi bi-telephone"></i> Contacter
+            </button>
+          </div>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+    // Variables globales pour gérer l'état
+    let currentFilter = 'all';
+    let currentSearch = '';
+
+    // Fonction de recherche améliorée
+    function performSearch() {
+      const searchValue = currentSearch.toLowerCase().trim();
+      const cards = document.querySelectorAll('.card');
+      const sections = document.querySelectorAll('.category-section');
+      
+      // Masquer toutes les sections d'abord
+      sections.forEach(section => {
+        section.style.display = 'none';
+      });
+      
+      let hasVisibleCards = false;
+      
+      cards.forEach(card => {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const location = card.querySelector('.card-location').textContent.toLowerCase();
+        const category = card.querySelector('.card-category').textContent.toLowerCase();
+        
+        // Vérifier si la carte correspond à la recherche ET au filtre
+        const matchesSearch = searchValue === '' || 
+          title.includes(searchValue) || 
+          location.includes(searchValue) || 
+          category.includes(searchValue);
+        
+        const matchesFilter = currentFilter === 'all' || 
+          card.getAttribute('data-category') === currentFilter;
+        
+        if (matchesSearch && matchesFilter) {
+          card.style.display = 'block';
+          card.style.opacity = '1';
+          hasVisibleCards = true;
+          
+          // Afficher la section parente
+          const section = card.closest('.category-section');
+          if (section) {
+            section.style.display = 'block';
+          }
+        } else {
+          card.style.display = 'none';
+          card.style.opacity = '0';
+        }
+      });
+      
+      // Afficher un message si aucun résultat
+      showNoResultsMessage();
+    }
+
+    // Fonction pour afficher un message si aucun résultat
+    function showNoResultsMessage() {
+      const visibleCards = document.querySelectorAll('.card[style*="display: block"]');
+      let messageElement = document.getElementById('no-results-message');
+      
+      if (visibleCards.length === 0) {
+        if (!messageElement) {
+          messageElement = document.createElement('div');
+          messageElement.id = 'no-results-message';
+          messageElement.className = 'text-center py-5';
+          messageElement.innerHTML = `
+            <div class="alert alert-info">
+              <i class="bi bi-search"></i>
+              <h5>Aucun résultat trouvé</h5>
+              <p>Essayez de modifier vos critères de recherche ou de filtrage.</p>
+            </div>
+          `;
+          document.getElementById('productGrid').appendChild(messageElement);
+        }
+      } else if (messageElement) {
+        messageElement.remove();
+      }
+    }
+
+    // Fonctionnalité de recherche
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('searchInput');
+      
+      if (searchInput) {
+        searchInput.addEventListener('input', function () {
+          currentSearch = this.value;
+          performSearch();
+        });
+        
+        // Ajouter un indicateur de recherche
+        searchInput.addEventListener('focus', function() {
+          this.style.borderColor = '#14B789';
+          this.style.boxShadow = '0 0 0 3px rgba(20, 183, 137, 0.1)';
+        });
+        
+        searchInput.addEventListener('blur', function() {
+          if (this.value === '') {
+            this.style.borderColor = '#e1e5e9';
+            this.style.boxShadow = 'none';
+          }
+        });
+      }
+    });
+
+    // Fonctionnalité de filtrage par catégorie
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          // Retirer la classe active de tous les boutons
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          // Ajouter la classe active au bouton cliqué
+          this.classList.add('active');
+          
+          currentFilter = this.getAttribute('data-filter');
+          performSearch();
+        });
+      });
+    });
+
+    // Fonctionnalité de tri
+    document.addEventListener('DOMContentLoaded', function() {
+      const sortSelect = document.getElementById('sortSelect');
+      
+      if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+          const sortBy = this.value;
+          const productGrid = document.getElementById('productGrid');
+          const cards = Array.from(productGrid.querySelectorAll('.card'));
+          
+          cards.sort((a, b) => {
+            switch(sortBy) {
+              case 'name':
+                return a.querySelector('.card-title').textContent.localeCompare(b.querySelector('.card-title').textContent);
+              case 'rating':
+                const ratingA = a.querySelectorAll('.star').length;
+                const ratingB = b.querySelectorAll('.star').length;
+                return ratingB - ratingA;
+              case 'location':
+                return a.querySelector('.card-location').textContent.localeCompare(b.querySelector('.card-location').textContent);
+              default:
+                return 0;
+            }
+          });
+          
+          // Réorganiser les cartes dans le DOM
+          cards.forEach(card => productGrid.appendChild(card));
+        });
+      }
+    });
+
+    // Animation d'apparition des cartes
+    document.addEventListener('DOMContentLoaded', function() {
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+          }
+        });
+      }, observerOptions);
+
+      // Observer toutes les cartes
+      document.querySelectorAll('.card').forEach(card => {
+        observer.observe(card);
+      });
+    });
+
+    // Fonction pour réinitialiser les filtres
+    function resetFilters() {
+      currentSearch = '';
+      currentFilter = 'all';
+      document.getElementById('searchInput').value = '';
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+      performSearch();
+    }
+
+    // Ajouter un bouton de réinitialisation
+    document.addEventListener('DOMContentLoaded', function() {
+      const filtersContainer = document.querySelector('.filters-container');
+      if (filtersContainer) {
+        const resetBtn = document.createElement('button');
+        resetBtn.className = 'filter-btn';
+        resetBtn.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Réinitialiser';
+        resetBtn.addEventListener('click', resetFilters);
+        filtersContainer.appendChild(resetBtn);
+      }
+    });
+
+    // Fonction pour gérer l'état des boutons selon le statut de la boutique
+    function updateButtonStates() {
+      document.querySelectorAll('.card').forEach(card => {
+        const statusElement = card.querySelector('.card-status');
+        const actionButtons = card.querySelectorAll('.card-actions .btn');
+        
+        if (statusElement && actionButtons.length > 0) {
+          const isOffline = statusElement.classList.contains('offline');
+          
+          actionButtons.forEach(btn => {
+            if (isOffline) {
+              btn.classList.add('disabled');
+              btn.setAttribute('disabled', 'true');
+            } else {
+              btn.classList.remove('disabled');
+              btn.removeAttribute('disabled');
+            }
+          });
+        }
+      });
+    }
+
+    // Fonctionnalités des cartes de boutique
+    document.addEventListener('DOMContentLoaded', function() {
+      // Appliquer l'état des boutons au chargement de la page
+      updateButtonStates();
+      
+      // Gestion des favoris
+      document.querySelectorAll('.card-favorite').forEach(favoriteBtn => {
+        favoriteBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          this.classList.toggle('favorited');
+          
+          if (this.classList.contains('favorited')) {
+            this.innerHTML = '<i class="bi bi-heart-fill"></i>';
+            this.style.background = '#ff6b6b';
+            this.style.color = 'white';
+          } else {
+            this.innerHTML = '<i class="bi bi-heart"></i>';
+            this.style.background = 'rgba(255, 255, 255, 0.9)';
+            this.style.color = '#333';
+          }
+        });
+      });
+
+      // Gestion des boutons d'action
+      document.querySelectorAll('.card-actions .btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          
+          // Vérifier si le bouton est désactivé
+          if (this.classList.contains('disabled') || this.hasAttribute('disabled')) {
+            e.preventDefault();
+            return;
+          }
+          
+          const card = this.closest('.card');
+          const boutiqueName = card.querySelector('.card-title').textContent;
+          
+          if (this.classList.contains('btn-primary')) {
+            // Action Visiter
+            alert(`Redirection vers la boutique ${boutiqueName}...`);
+            // Ici vous pouvez ajouter la logique de redirection
+          } else if (this.classList.contains('btn-outline')) {
+            // Action Contacter
+            alert(`Contact de la boutique ${boutiqueName}...`);
+            // Ici vous pouvez ajouter la logique de contact
+          }
+        });
+      });
+
+      // Animation au survol des cartes
+      document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-10px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0) scale(1)';
+        });
+      });
+    });
+
+    // --- Espace réservé: création et suppression de boutiques ---
+    const STORAGE_KEY = 'boutiquesCustom';
+
+    function getStoredBoutiques() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveStoredBoutiques(items) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    }
+
+    function normalizeText(value) {
+      return (value || '').toString().trim().toLowerCase();
+    }
+
+    function pageHasBoutique(name, location) {
+      const n = normalizeText(name);
+      const l = normalizeText(location);
+      const cards = document.querySelectorAll('.card');
+      for (const card of cards) {
+        const title = normalizeText(card.querySelector('.card-title')?.textContent || '');
+        const loc = normalizeText(card.querySelector('.card-location')?.textContent || '');
+        if (title === n && (loc === l || loc.includes(l))) return true;
+      }
+      return false;
+    }
+
+    function listHasBoutique(items, name, location) {
+      const n = normalizeText(name);
+      const l = normalizeText(location);
+      return items.some(it => normalizeText(it.name) === n && normalizeText(it.location) === l);
+    }
+
+    function isDuplicateBoutique(candidate) {
+      const items = getStoredBoutiques();
+      // Check against defaults already in DOM and existing stored items
+      return pageHasBoutique(candidate.name, candidate.location) || listHasBoutique(items, candidate.name, candidate.location);
+    }
+
+    function createCardElement(data) {
+      const ratingStars = Math.max(1, Math.min(5, Number(data.rating) || 3));
+      const starHtml = Array.from({ length: 5 }).map((_, i) => i < ratingStars ? '<span class="star">&#9733;</span>' : '<span class="star">&#9734;</span>').join('');
+      const statusClass = data.status === 'offline' ? 'offline' : 'online';
+      const statusLabel = data.status === 'offline' ? 'Hors ligne' : 'En ligne';
+      const imageSrc = (data.imageDataUrl && data.imageDataUrl.trim() !== '') ? data.imageDataUrl : (data.image && data.image.trim() !== '' ? data.image.trim() : (data.category === 'electronique' ? 'images/electro.jpg' : 'images/Presentation .jpg'));
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'card';
+      wrapper.setAttribute('data-category', data.category);
+      wrapper.setAttribute('data-custom', '1');
+      wrapper.innerHTML = `
+        <div class="card-image-container">
+          <img src="${imageSrc}" alt="${data.name} Boutique">
+          <div class="card-status ${statusClass}">${statusLabel}</div>
+          <div class="card-favorite">
+            <i class="bi bi-heart"></i>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <h5 class="card-title">${data.name}</h5>
+            <div class="card-rating">
+              <div class="star-rating">${starHtml}</div>
+              <span class="rating-text">${ratingStars}.0</span>
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="card-location"><i class="bi bi-geo-alt"></i> ${data.location}</div>
+            <div class="card-hours"><i class="bi bi-clock"></i> ${data.hours}</div>
+          </div>
+          <div class="card-category">${data.category === 'electronique' ? 'Électronique' : 'Divers'}</div>
+          <div class="card-description">${data.description || ''}</div>
+          <div class="card-actions">
+            <button class="btn btn-primary" ${statusClass === 'offline' ? 'disabled' : ''}><i class="bi bi-shop"></i> Visiter</button>
+            <button class="btn btn-outline" ${statusClass === 'offline' ? 'disabled' : ''}><i class="bi bi-telephone"></i> Contacter</button>
+          </div>
+        </div>
+      `;
+      return wrapper;
+    }
+
+    function renderStoredBoutiques() {
+      const items = getStoredBoutiques();
+      items.forEach(item => {
+        // Skip rendering if a card with same name + location already exists
+        if (pageHasBoutique(item.name, item.location)) return;
+        const card = createCardElement(item);
+        
+        // Trouver la bonne section selon la catégorie
+        const sectionId = item.category === 'electronique' ? 'electronique-section' : 'divers-section';
+        const section = document.getElementById(sectionId);
+        
+        if (section) {
+          const productGrid = section.querySelector('.product-grid');
+          if (productGrid) {
+            productGrid.appendChild(card);
+          }
+        }
+      });
+      // Appliquer l'état des boutons après le rendu
+      updateButtonStates();
+      performSearch();
+    }
+
+    function getDefaultOverrides() {
+      try {
+        return JSON.parse(localStorage.getItem('boutiqueOverrides') || '{}');
+      } catch (_) {
+        return {};
+      }
+    }
+
+    function applyOverridesToDefaultCards() {
+      const overrides = getDefaultOverrides();
+      Object.entries(overrides).forEach(([originalName, data]) => {
+        const selector = `.card:not([data-custom="1"]) [data-original-name="${originalName}"]`;
+        let titleEl = document.querySelector(selector);
+        if (!titleEl) {
+          // fallback: try to find by text content if no original tag
+          const candidates = Array.from(document.querySelectorAll('.card:not([data-custom="1"]) .card-title'));
+          titleEl = candidates.find(el => (el.textContent || '').trim() === originalName) || null;
+          if (titleEl) titleEl.setAttribute('data-original-name', originalName);
+        }
+        if (!titleEl) return;
+        const card = titleEl.closest('.card');
+
+        // Title (optional) - we display new name but keep data-original-name for stable lookup
+        if (data.name !== undefined) titleEl.textContent = data.name || '';
+
+        // Location
+        const locEl = card.querySelector('.card-location');
+        if (locEl && data.location) {
+          locEl.innerHTML = '<i class="bi bi-geo-alt"></i> ' + data.location;
+        }
+
+        // Hours
+        const hoursEl = card.querySelector('.card-hours');
+        if (hoursEl && data.hours) {
+          hoursEl.innerHTML = '<i class="bi bi-clock"></i> ' + data.hours;
+        }
+
+        // Category
+        const catEl = card.querySelector('.card-category');
+        if (catEl && data.category) {
+          catEl.textContent = data.category === 'electronique' ? 'Électronique' : 'Divers';
+          card.setAttribute('data-category', data.category);
+        }
+
+        // Image
+        const imgEl = card.querySelector('.card-image-container img');
+        if (imgEl && data.image) {
+          imgEl.src = data.image;
+          imgEl.alt = ((data.name !== undefined ? data.name : originalName) || '') + ' Boutique';
+        }
+
+        // Status
+        const statusEl = card.querySelector('.card-status');
+        if (statusEl && data.status) {
+          statusEl.classList.remove('online', 'offline');
+          if (data.status === 'offline') {
+            statusEl.classList.add('offline');
+            statusEl.textContent = 'Hors ligne';
+          } else {
+            statusEl.classList.add('online');
+            statusEl.textContent = 'En ligne';
+          }
+        }
+
+        // Rating
+        if (data.rating) {
+          const rating = Math.max(1, Math.min(5, Number(data.rating) || 3));
+          const starHtml = Array.from({ length: 5 }).map((_, i) => i < rating ? '<span class="star">&#9733;</span>' : '<span class="star">&#9734;</span>').join('');
+          const starWrap = card.querySelector('.star-rating');
+          if (starWrap) starWrap.innerHTML = starHtml;
+          const ratingText = card.querySelector('.rating-text');
+          if (ratingText) ratingText.textContent = rating.toString();
+        }
+
+        // Description
+        const descEl = card.querySelector('.card-description');
+        if (descEl && (data.description !== undefined)) {
+          descEl.textContent = data.description || '';
+        }
+      });
+
+      // Appliquer l'état des boutons après les modifications
+      updateButtonStates();
+      // Re-apply search filtering because categories may have changed
+      performSearch();
+    }
+
+    function refreshStoredBoutiques() {
+      const productGrid = document.getElementById('productGrid');
+      // Remove existing custom cards
+      productGrid.querySelectorAll('.card[data-custom="1"]').forEach(el => el.remove());
+      // Re-render from storage, skipping duplicates with defaults
+      renderStoredBoutiques();
+    }
+
+    function clearAdminForm() {
+      ['newName','newLocation','newHours','newImage','newDescription','newRating'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      const cat = document.getElementById('newCategory');
+      if (cat) cat.value = 'divers';
+      const st = document.getElementById('newStatus');
+      if (st) st.value = 'online';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Render previously created boutiques
+      renderStoredBoutiques();
+      // Tag default cards with original names for stable lookup
+      document.querySelectorAll('.card:not([data-custom="1"]) .card-title').forEach(el => {
+        const name = (el.textContent || '').trim();
+        if (name && !el.hasAttribute('data-original-name')) {
+          el.setAttribute('data-original-name', name);
+        }
+      });
+      // Apply overrides to default cards
+      applyOverridesToDefaultCards();
+
+      // Toggle admin mode
+      const adminToggle = document.getElementById('adminManageToggle');
+      if (adminToggle) {
+        adminToggle.addEventListener('change', function() {
+          if (this.checked) {
+            document.body.classList.add('admin-mode');
+          } else {
+            document.body.classList.remove('admin-mode');
+          }
+        });
+      }
+
+      // Create boutique
+      const createBtn = document.getElementById('createBoutiqueBtn');
+      if (createBtn) {
+        createBtn.addEventListener('click', function() {
+          const data = {
+            id: 'b_' + Date.now(),
+            name: (document.getElementById('newName').value || '').trim(),
+            location: (document.getElementById('newLocation').value || '').trim(),
+            hours: (document.getElementById('newHours').value || '').trim(),
+            category: document.getElementById('newCategory').value,
+            image: (document.getElementById('newImage').value || '').trim(),
+            status: document.getElementById('newStatus').value,
+            rating: document.getElementById('newRating').value,
+            description: (document.getElementById('newDescription').value || '').trim()
+          };
+
+          if (!data.name || !data.location || !data.hours) {
+            alert('Veuillez renseigner au minimum: Nom, Localisation et Heures.');
+            return;
+          }
+
+          // Prevent duplicates by name + location
+          if (isDuplicateBoutique(data)) {
+            alert('Cette boutique existe déjà (même nom et localisation).');
+            return;
+          }
+
+          const items = getStoredBoutiques();
+          items.push(data);
+          saveStoredBoutiques(items);
+
+          // Render only if it is not duplicate on page (should not be due to check)
+          if (!pageHasBoutique(data.name, data.location)) {
+            const card = createCardElement(data);
+            
+            // Trouver la bonne section selon la catégorie
+            const sectionId = data.category === 'electronique' ? 'electronique-section' : 'divers-section';
+            const section = document.getElementById(sectionId);
+            
+            if (section) {
+              const productGrid = section.querySelector('.product-grid');
+              if (productGrid) {
+                productGrid.appendChild(card);
+              }
+            }
+            // Appliquer l'état des boutons après l'ajout
+            updateButtonStates();
+          }
+          clearAdminForm();
+          performSearch();
+          alert('Boutique ajoutée.');
+        });
+      }
+
+      // Clear form
+      const clearBtn = document.getElementById('clearFormBtn');
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+          clearAdminForm();
+        });
+      }
+
+      // Clear all custom boutiques
+      const clearCustomBtn = document.getElementById('clearCustomBtn');
+      if (clearCustomBtn) {
+        clearCustomBtn.addEventListener('click', function() {
+          if (confirm('Supprimer toutes les boutiques ajoutées (personnalisées) ?')) {
+            saveStoredBoutiques([]);
+            document.querySelectorAll('.card[data-custom="1"]').forEach(el => el.remove());
+            performSearch();
+          }
+        });
+      }
+
+      // Suppression désactivée sur cette page
+    });
+
+    // Synchronize with admin edits via storage events
+    window.addEventListener('storage', function(e) {
+      if (e.key === STORAGE_KEY) {
+        refreshStoredBoutiques();
+      }
+      if (e.key === 'boutiqueOverrides') {
+        applyOverridesToDefaultCards();
+      }
+    });
+  </script>
+  
+  <!-- Analytics Script -->
+  <script src="js/analytics.js"></script>
+</html>

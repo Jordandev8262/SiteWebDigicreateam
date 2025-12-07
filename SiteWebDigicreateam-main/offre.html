@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Offre - Postuler comme développeur chez DigiCreaTeam">
+        <meta name="author" content="DigiCreaTeam">
+        <title>Offre | DigiCreaTeam</title>
+        <link rel="shortcut icon" href="favicon.png">
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/bootstrap-icons.css" rel="stylesheet">
+        <link href="css/digicreateam.css" rel="stylesheet">
+        <style>
+        /* Styles spécifiques à la page Offre */
+        .offre-page .section-padding {
+            position: relative;
+            padding: 90px 0;
+            background: radial-gradient(1200px 600px at 10% 10%, rgba(102,126,234,.08), transparent 60%),
+                        radial-gradient(1000px 500px at 90% 0%, rgba(118,75,162,.08), transparent 60%);
+        }
+        .offre-hero {
+            position: relative;
+            border-radius: 18px;
+            overflow: hidden;
+            min-height: 320px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 25px 60px rgba(0,0,0,.12);
+            background: #1f2230;
+            isolation: isolate;
+            margin-bottom: -70px;
+        }
+        
+        .hero-image-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        
+        .hero-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        
+        .hero-image.active {
+            opacity: 1;
+        }
+        .offre-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(31,34,48,.65) 0%, rgba(31,34,48,.25) 40%, rgba(31,34,48,.65) 100%);
+            z-index: 0;
+        }
+        .offre-hero::after {
+            content: '';
+            position: absolute;
+            right: -120px;
+            bottom: -120px;
+            width: 360px;
+            height: 360px;
+            background: radial-gradient(circle at 50% 50%, rgba(102,126,234,.35), rgba(118,75,162,.35) 60%, transparent 60%);
+            filter: blur(10px);
+            z-index: 0;
+        }
+        .offre-hero .hero-content {
+            position: relative;
+            z-index: 1;
+            color: #ffffff;
+            padding: 28px;
+        }
+        .page-gradient-title {
+            background: transparent;
+            color: #ffffff;
+            border-radius: 16px;
+            padding: 28px 28px;
+            box-shadow: none;
+        }
+        .page-gradient-title h2 {
+            color: #ffffff;
+        }
+        .apply-card {
+            background: linear-gradient(180deg, #ffffff 0%, rgba(102,126,234,0.04) 100%);
+            border-radius: 16px;
+            box-shadow: 0 12px 32px rgba(102,126,234,0.12);
+            border: 1px solid rgba(102, 126, 234, 0.18);
+        }
+        .apply-card .section-title-wrap h2 { margin-bottom: 0; }
+        .lang-group {
+            background: rgba(102, 126, 234, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.18);
+            border-radius: 12px;
+        }
+        .lang-group .form-check-label { color: #333; }
+        .custom-form .form-floating > label { color: #777; }
+        .custom-form .form-control:focus, .custom-form .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+        }
+        .custom-form button.form-control {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+        }
+        .custom-form button.form-control:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(118, 75, 162, 0.25);
+        }
+        .custom-form button.form-control:disabled { opacity: .8; }
+        .badge-chip {
+            display: inline-block;
+            padding: 6px 10px;
+            background: #fff;
+            border: 1px solid #e8ecf3;
+            border-radius: 999px;
+            font-size: 12px;
+            color: #444;
+            margin-right: 6px;
+        }
+        .language-search {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .language-search .form-control {
+            background: #fff;
+        }
+        .language-list {
+            max-height: 320px;
+            overflow: auto;
+        }
+        .language-item { margin-bottom: 6px; }
+        </style>
+    </head>
+    <body class="offre-page">
+
+        <main>
+            <section id="offre" class="section-padding">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="offre-hero">
+                                <div class="hero-image-slider">
+                                    <div class="hero-image active" style="background-image: url('images/recrute.jpg');"></div>
+                                    <div class="hero-image" style="background-image: url('images/transite1.jpg');"></div>
+                                    <div class="hero-image" style="background-image: url('images/Transite3.jpg');"></div>
+                                </div>
+                                <div class="hero-content col-lg-8 col-12">
+                                    <div class="page-gradient-title mb-0">
+                                        <h2 class="mb-0 d-flex align-items-center" style="gap:10px;">
+                                            <i class="bi bi-code-slash"></i>
+                                            <span id="offreTitleText">Offre: Développeur(se) Web</span>
+                                        </h2>
+                                        <div id="offreDesc" class="description mt-2" style="opacity:.95;">Rejoignez nos projets (sites vitrines, e‑commerce, outils internes) avec de belles pratiques UX.</div>
+                                        <div id="offreDesc2" class="descriptionn mt-3">
+                                            <span class="badge-chip"><i class="bi bi-lightning-charge"></i> HTML/CSS/JS</span>
+                                            <span class="badge-chip"><i class="bi bi-bootstrap"></i> Bootstrap</span>
+                                            <span class="badge-chip"><i class="bi bi-diagram-3"></i> API</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="postuler" class="contact section-padding">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="apply-card p-4 p-md-5">
+                                <div class="section-title-wrap d-flex justify-content-center align-items-center mb-4">
+                                    <h2 class="ms-4 mb-0"><i class="bi bi-person-plus"></i> Postuler maintenant</h2>
+                                </div>
+                                <form id="applyForm" action="https://script.google.com/macros/s/AKfycbwN9xiBGD-6BZXa8OHWynCQv8BumJVxSpcKAmDMuMBbIW7nFMao8u745qE4_N_P4_w/exec" method="post" class="custom-form" role="form" enctype="multipart/form-data">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" name="candidate_lastname" id="candidate_lastname" class="form-control" placeholder="Nom" required>
+                                            <label for="candidate_lastname">Nom</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" name="candidate_firstname" id="candidate_firstname" class="form-control" placeholder="Prénom" required>
+                                            <label for="candidate_firstname">Prénom</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="email" name="candidate_email" id="candidate_email" pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$" class="form-control" placeholder="Adresse Gmail" required>
+                                            <label for="candidate_email">Adresse Gmail (obligatoire)</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="tel" name="candidate_phone" id="candidate_phone" class="form-control" placeholder="Téléphone" required>
+                                            <label for="candidate_phone">Téléphone</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="url" name="candidate_portfolio" id="candidate_portfolio" class="form-control" placeholder="Portfolio ou GitHub" required>
+                                            <label for="candidate_portfolio">Lien Portfolio / GitHub</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="file" name="candidate_cv_file" id="candidate_cv_file" class="form-control" placeholder="CV" accept=".pdf,.doc,.docx" required>
+                                            <label for="candidate_cv_file">CV (PDF, DOC, DOCX)</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <input type="text" name="candidate_skills" id="candidate_skills" class="form-control" placeholder="Compétences (ex: HTML, CSS, JS, Bootstrap)">
+                                            <label for="candidate_skills">Compétences clés</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <textarea name="candidate_experience" id="candidate_experience" class="form-control" placeholder="Expérience" style="height: 120px"></textarea>
+                                            <label for="candidate_experience">Brève expérience / Projets</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select name="candidate_availability" id="candidate_availability" class="form-select" required>
+                                                <option value="" selected disabled>Choisir...</option>
+                                                <option value="Temps plein">Temps plein</option>
+                                                <option value="Temps partiel">Temps partiel</option>
+                                                <option value="Freelance">Freelance</option>
+                                            </select>
+                                            <label for="candidate_availability">Disponibilité</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select name="candidate_province" id="candidate_province" class="form-select" required>
+                                                <option value="" selected disabled>Choisir votre province</option>
+                                                <option value="Kinshasa">Kinshasa</option>
+                                                <option value="Kongo-Central">Kongo-Central</option>
+                                                <option value="Kwango">Kwango</option>
+                                                <option value="Kwilu">Kwilu</option>
+                                                <option value="Mai-Ndombe">Mai-Ndombe</option>
+                                                <option value="Kasaï">Kasaï</option>
+                                                <option value="Kasaï-Central">Kasaï-Central</option>
+                                                <option value="Kasaï-Oriental">Kasaï-Oriental</option>
+                                                <option value="Lomami">Lomami</option>
+                                                <option value="Sankuru">Sankuru</option>
+                                                <option value="Maniema">Maniema</option>
+                                                <option value="Sud-Kivu">Sud-Kivu</option>
+                                                <option value="Nord-Kivu">Nord-Kivu</option>
+                                                <option value="Ituri">Ituri</option>
+                                                <option value="Tshopo">Tshopo</option>
+                                                <option value="Bas-Uélé">Bas-Uélé</option>
+                                                <option value="Haut-Uélé">Haut-Uélé</option>
+                                                <option value="Mongala">Mongala</option>
+                                                <option value="Nord-Ubangi">Nord-Ubangi</option>
+                                                <option value="Sud-Ubangi">Sud-Ubangi</option>
+                                                <option value="Équateur">Équateur</option>
+                                                <option value="Tshuapa">Tshuapa</option>
+                                                <option value="Haut-Katanga">Haut-Katanga</option>
+                                                <option value="Lualaba">Lualaba</option>
+                                                <option value="Haut-Lomami">Haut-Lomami</option>
+                                                <option value="Tanganyika">Tanganyika</option>
+                                            </select>
+                                            <label for="candidate_province">Province</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <textarea name="candidate_other" id="candidate_other" class="form-control" placeholder="Autres informations nécessaires" style="height: 120px"></textarea>
+                                            <label for="candidate_other">Autres informations nécessaires</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-5 col-12 ms-auto">
+                                        <button type="submit" class="form-control"><i class="bi bi-send"></i> Envoyer la candidature</button>
+                                    </div>
+                                    <div class="col-12">
+                                        <div id="applyMessage" style="display:none" class="alert" role="alert"></div>
+                                    </div>
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 col-12">
+                        <div class="copyright-text-wrap">
+                            <p class="mb-0">
+                                <span class="copyright-text">Copyright © 2025 <a href="index.html">DigiCreaTeam</a> Company. All rights reserved.</span>
+                                <a rel="sponsored" href="Politique.html">Politique de confidentialité</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <script src="js/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script>
+        // Fonction pour la transition automatique des images
+        function initImageSlider() {
+            const images = document.querySelectorAll('.hero-image');
+            let currentIndex = 0;
+            
+            function showNextImage() {
+                // Retirer la classe active de l'image actuelle
+                images[currentIndex].classList.remove('active');
+                
+                // Passer à l'image suivante
+                currentIndex = (currentIndex + 1) % images.length;
+                
+                // Ajouter la classe active à la nouvelle image
+                images[currentIndex].classList.add('active');
+            }
+            
+            // Démarrer la transition automatique toutes les 3 secondes
+            setInterval(showNextImage, 3000);
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser le slider d'images
+            initImageSlider();
+            // Appliquer le titre d'offre depuis le stockage
+            (function(){
+                var titleEl = document.getElementById('offreTitleText');
+                if (titleEl) {
+                    try {
+                        var saved = localStorage.getItem('offreTitleText');
+                        if (saved && saved.trim() !== '') {
+                            titleEl.textContent = saved;
+                        }
+                    } catch(e) {}
+                }
+                window.addEventListener('storage', function(e){
+                    if (e.key === 'offreTitleText' && titleEl) {
+                        titleEl.textContent = (e.newValue || 'Offre: Développeur(se) Web');
+                    }
+                });
+            })();
+            // Appliquer descriptions depuis stockage
+            (function(){
+                var d1 = document.getElementById('offreDesc');
+                var d2 = document.getElementById('offreDesc2');
+                try {
+                    var s1 = localStorage.getItem('offreDescText');
+                    if (d1 && s1 && s1.trim() !== '') d1.textContent = s1;
+                    var s2 = localStorage.getItem('offreDesc2Text');
+                    if (d2 && s2 && s2.trim() !== '') d2.textContent = s2;
+                } catch(e) {}
+                window.addEventListener('storage', function(e){
+                    if (e.key === 'offreDescText' && d1) d1.textContent = (e.newValue || d1.textContent);
+                    if (e.key === 'offreDesc2Text' && d2) d2.textContent = (e.newValue || d2.textContent);
+                });
+            })();
+            // Filtre de recherche pour la liste des langages
+            var searchInput = document.getElementById('languageSearch');
+            var clearBtn = document.getElementById('languageClear');
+            var list = document.getElementById('languageList');
+            if (searchInput && list) {
+                var items = list.querySelectorAll('.language-item');
+                function filterLanguages() {
+                    var q = (searchInput.value || '').toLowerCase().trim();
+                    items.forEach(function(item) {
+                        var name = (item.getAttribute('data-name') || '').toLowerCase();
+                        item.style.display = name.indexOf(q) !== -1 ? '' : 'none';
+                    });
+                }
+                searchInput.addEventListener('input', filterLanguages);
+                if (clearBtn) {
+                    clearBtn.addEventListener('click', function() {
+                        searchInput.value = '';
+                        filterLanguages();
+                        searchInput.focus();
+                    });
+                }
+                filterLanguages();
+            }
+
+            const applyForm = document.getElementById('applyForm');
+            if (!applyForm) return;
+            applyForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = e.target;
+                const url = form.action;
+                const formData = new FormData(form);
+                const submitButton = form.querySelector('button[type="submit"]');
+                const original = submitButton.textContent;
+                submitButton.textContent = 'Envoi en cours...';
+                submitButton.disabled = true;
+
+                fetch(url, { method: 'POST', body: formData })
+                    .then(function(response) {
+                        if (!response.ok) throw new Error('Erreur serveur');
+                        return response.text();
+                    })
+                    .then(function() {
+                        const box = document.getElementById('applyMessage');
+                        box.style.display = 'block';
+                        box.className = 'alert alert-success';
+                        box.textContent = '✅ Merci ! Votre candidature a été envoyée.';
+                        form.reset();
+                    })
+                    .catch(function(error) {
+                        console.error(error);
+                        const box = document.getElementById('applyMessage');
+                        box.style.display = 'block';
+                        box.className = 'alert alert-danger';
+                        box.textContent = '❌ Une erreur est survenue. Veuillez réessayer.';
+                    })
+                    .finally(function() {
+                        submitButton.textContent = original;
+                        submitButton.disabled = false;
+                        setTimeout(function(){
+                            const box = document.getElementById('applyMessage');
+                            if (box) box.style.display = 'none';
+                        }, 5000);
+                    });
+            });
+        });
+        </script>
+    </body>
+</html>
+
+

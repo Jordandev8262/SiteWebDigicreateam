@@ -1,0 +1,2526 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Contrôle - DigiCreaTeam</title>
+    <link rel="shortcut icon" href="favicon.png">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .admin-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #14B789;
+            text-decoration: none;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .admin-nav a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .admin-nav a:hover {
+            color: #14B789;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .dashboard-container {
+            padding: 2rem 0;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        /* Boutique management */
+        .boutique-admin {
+            background: white;
+            border-radius: 15px;
+            padding: 1.25rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .boutique-admin h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+        .admin-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: .75rem; margin-bottom: .75rem; }
+        .admin-actions { display: flex; gap: .75rem; flex-wrap: wrap; }
+        .btn-admin { background: linear-gradient(135deg, #14B789, #667eea); color: #fff; border: none; padding: 10px 16px; border-radius: 10px; font-weight: 600; }
+        .btn-admin-outline { background: transparent; color: #667eea; border: 2px solid #667eea; padding: 10px 16px; border-radius: 10px; font-weight: 600; }
+        .admin-note { color:#667; margin-top:8px; }
+
+        .dashboard-subtitle {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #14B789, #667eea);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon.visitors { background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); }
+        .stat-icon.clicks { background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); }
+        .stat-icon.pages { background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%); }
+        .stat-icon.time { background: linear-gradient(45deg, #43e97b 0%, #38f9d7 100%); }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-subtitle {
+            font-size: 0.9rem;
+            color: #14B789;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #28a745;
+        }
+
+        .stat-trend.down {
+            color: #dc3545;
+        }
+
+        .stat-trend i {
+            font-size: 0.8rem;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+
+        .form-stats {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-summary {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+        }
+
+        .form-stat-item {
+            text-align: center;
+        }
+
+        .form-stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #14B789;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-stat-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .form-activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .form-activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1rem;
+            color: white;
+            background: #f093fb;
+        }
+
+        .form-activity-content {
+            flex: 1;
+        }
+
+        .form-activity-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+
+        .form-activity-time {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .link-stats {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .link-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #14B789;
+        }
+
+        .link-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #14B789, #667eea);
+        }
+
+        .link-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+            color: white;
+            background: linear-gradient(135deg, #14B789, #667eea);
+            flex-shrink: 0;
+        }
+
+        .link-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .link-url {
+            font-weight: 600;
+            color: #2c3e50;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.25rem;
+            word-break: break-all;
+            transition: color 0.3s ease;
+        }
+
+        .link-url:hover {
+            color: #14B789;
+        }
+
+        .link-description {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+        }
+
+        .link-stats {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .link-count {
+            background: linear-gradient(135deg, #14B789, #667eea);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .link-rank {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .link-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+            color: #28a745;
+        }
+
+        .link-trend.down {
+            color: #dc3545;
+        }
+
+        .link-trend i {
+            font-size: 0.7rem;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #14B789, #667eea);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(20, 183, 137, 0.3);
+        }
+
+        /* Animation pour les éléments de lien */
+        .link-item {
+            animation: slideInUp 0.6s ease forwards;
+        }
+
+        .link-item:nth-child(1) { animation-delay: 0.1s; }
+        .link-item:nth-child(2) { animation-delay: 0.2s; }
+        .link-item:nth-child(3) { animation-delay: 0.3s; }
+        .link-item:nth-child(4) { animation-delay: 0.4s; }
+        .link-item:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Styles pour les états vides */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ddd;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state small {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-title {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .link-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .link-stats {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .link-content {
+                width: 100%;
+            }
+        }
+
+        /* Boutons de suppression liens */
+        .link-delete-btn {
+            background: transparent;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .link-delete-btn:hover {
+            background: #dc3545;
+            color: #fff;
+        }
+        .clear-links-btn {
+            background: transparent;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            float: right;
+        }
+        .clear-links-btn:hover {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        /* Modal gestion boutiques */
+        .modal-backdrop-custom {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .modal-backdrop-custom.show { display: flex; }
+        .modal-container-custom {
+            background: #fff;
+            width: 95%;
+            max-width: 900px;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .modal-header-custom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #eee;
+        }
+        .modal-title-custom { font-size: 1.2rem; font-weight: 700; color: #2c3e50; }
+        .modal-close-btn { background: transparent; border: none; font-size: 1.5rem; line-height: 1; cursor: pointer; color: #7f8c8d; }
+        .modal-body-custom { padding: 1rem 1.25rem; max-height: 70vh; overflow: auto; }
+        .boutique-item-card { border: 1px solid #e9ecef; border-radius: 10px; padding: .75rem; margin-bottom: .75rem; background: #fff; }
+        .boutique-item-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .5rem; }
+        .boutique-item-actions { display: flex; gap: .5rem; margin-top: .5rem; }
+        .btn-save-boutique { background: linear-gradient(135deg, #14B789, #667eea); color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 600; }
+        .btn-delete-boutique { background: transparent; color: #dc3545; border: 1px solid #dc3545; padding: 6px 12px; border-radius: 8px; font-weight: 600; }
+        @media (max-width: 768px) { .boutique-item-grid { grid-template-columns: 1fr; } }
+
+        /* Ligne compacte pour Détails des Boutiques */
+        .boutique-row { display: flex; gap: .75rem; align-items: center; justify-content: space-between; padding: .6rem .75rem; border: 1px solid #e9ecef; border-radius: 10px; background: #fff; margin-bottom: .5rem; }
+        .boutique-row .info { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+        .boutique-name { font-weight: 700; color: #2c3e50; }
+        .badge-cat { background: linear-gradient(135deg, #14B789, #667eea); color: #fff; padding: 2px 8px; border-radius: 12px; font-size: .75rem; font-weight: 600; }
+        .badge-status { padding: 2px 8px; border-radius: 12px; font-size: .75rem; font-weight: 700; }
+        .badge-status.online { background: #2ecc71; color: #fff; }
+        .badge-status.offline { background: #e74c3c; color: #fff; }
+        .btn-edit-boutique { background: transparent; color: #0d6efd; border: 1px solid #0d6efd; padding: 6px 12px; border-radius: 8px; font-weight: 600; }
+        .btn-edit-boutique:hover { background: #0d6efd; color: #fff; }
+        .inline-editor { border: 1px dashed #cbd5e1; border-radius: 10px; padding: .75rem; margin: .5rem 0; background: #f8fafc; }
+        .inline-editor .row-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .5rem; }
+        @media (max-width: 768px) { .inline-editor .row-grid { grid-template-columns: 1fr; } }
+
+        /* Styles pour la gestion des images */
+        .upload-zone {
+            border: 2px dashed #14B789;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            transition: all 0.3s ease;
+        }
+        .upload-zone:hover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
+        }
+        .upload-area {
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .upload-content h5 {
+            color: #2c3e50;
+            margin: 1rem 0 0.5rem 0;
+        }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .image-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .image-card:hover {
+            transform: translateY(-2px);
+            border-color: #14B789;
+        }
+        .image-card.modified {
+            border-color: #ffc107;
+            background: linear-gradient(135deg, #fff3cd, #ffffff);
+        }
+        .image-preview {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+        }
+        .image-info {
+            margin-bottom: 0.75rem;
+        }
+        .image-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+        .image-path {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            word-break: break-all;
+        }
+        .image-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .btn-image-action {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-replace {
+            background: #14B789;
+            color: white;
+        }
+        .btn-replace:hover {
+            background: #0d8f6b;
+        }
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-reset:hover {
+            background: #5a6268;
+        }
+        .btn-preview {
+            background: #17a2b8;
+            color: white;
+        }
+        .btn-preview:hover {
+            background: #138496;
+        }
+        .image-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .status-original {
+            background: #e9ecef;
+            color: #495057;
+        }
+        .status-modified {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-new {
+            background: #d4edda;
+            color: #155724;
+        }
+        .drag-over {
+            border-color: #667eea !important;
+            background: linear-gradient(135deg, #e3f2fd, #f8f9fa) !important;
+            transform: scale(1.02);
+        }
+        .progress-bar-custom {
+            height: 4px;
+            background: linear-gradient(90deg, #14B789, #667eea);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Admin -->
+    <header class="admin-header">
+        <div class="container">
+            <nav class="admin-navbar">
+                <a href="index.html" class="admin-brand">
+                    <i class="bi bi-shield-check"></i> DigiCreaTeam Admin
+                </a>
+                <div class="admin-nav">
+                    <a href="index.html">
+                        <i class="bi bi-house"></i> Site Web
+                    </a>
+                    <a href="Ourteams.html">
+                        <i class="bi bi-people"></i> Équipe
+                    </a>
+                    <a href="Boutique.html">
+                        <i class="bi bi-shop"></i> Boutique
+                    </a>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="bi bi-box-arrow-right"></i> Déconnexion
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+        <div class="container">
+            <h1 class="dashboard-title">Tableau de Contrôle</h1>
+            <p class="dashboard-subtitle">Gestion et suivi de votre site web DigiCreaTeam</p>
+
+            <button class="refresh-btn" onclick="refreshData()">
+                <i class="bi bi-arrow-clockwise"></i> Actualiser les données
+            </button>
+
+            <!-- Statistiques principales -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon visitors">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stat-number" id="totalVisitors">0</div>
+                    <div class="stat-label">Visiteurs Totaux</div>
+                    <div class="stat-subtitle" id="visitorsToday">+0 aujourd'hui</div>
+                    <div class="stat-trend" id="visitorsTrend">
+                        <i class="bi bi-arrow-up"></i>
+                        <span>+0%</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon clicks">
+                        <i class="bi bi-mouse"></i>
+                    </div>
+                    <div class="stat-number" id="totalClicks">0</div>
+                    <div class="stat-label">Clics Totaux</div>
+                    <div class="stat-subtitle" id="clicksToday">+0 aujourd'hui</div>
+                    <div class="stat-trend" id="clicksTrend">
+                        <i class="bi bi-arrow-up"></i>
+                        <span>+0%</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon pages">
+                        <i class="bi bi-file-text"></i>
+                    </div>
+                    <div class="stat-number" id="totalPages">0</div>
+                    <div class="stat-label">Pages Vues</div>
+                    <div class="stat-subtitle" id="pagesToday">+0 aujourd'hui</div>
+                    <div class="stat-trend" id="pagesTrend">
+                        <i class="bi bi-arrow-up"></i>
+                        <span>+0%</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon time">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <div class="stat-number" id="avgTime">0s</div>
+                    <div class="stat-label">Temps Moyen</div>
+                    <div class="stat-subtitle" id="timeToday">+0s aujourd'hui</div>
+                    <div class="stat-trend" id="timeTrend">
+                        <i class="bi bi-arrow-up"></i>
+                        <span>+0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graphiques -->
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-container">
+                        <h3 class="chart-title">Visiteurs par Jour</h3>
+                        <canvas id="visitorsChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-container">
+                        <h3 class="chart-title">Formulaires Soumis par Jour</h3>
+                        <canvas id="formsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-container">
+                        <h3 class="chart-title">Pages Populaires</h3>
+                        <canvas id="pagesChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-container">
+                        <h3 class="chart-title">Types de Formulaires</h3>
+                        <canvas id="formTypesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="form-stats">
+                        <h3 class="chart-title">Formulaires Soumis</h3>
+                        <div class="form-summary">
+                            <div class="form-stat-item">
+                                <div class="form-stat-number" id="totalForms">0</div>
+                                <div class="form-stat-label">Total Formulaires</div>
+                            </div>
+                            <div class="form-stat-item">
+                                <div class="form-stat-number" id="todayForms">0</div>
+                                <div class="form-stat-label">Aujourd'hui</div>
+                            </div>
+                        </div>
+                        <div id="formActivity">
+                            <!-- Activité des formulaires générée par JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="link-stats">
+                        <h3 class="chart-title">Liens les Plus Clicqués <button id="clearAllLinksBtn" class="clear-links-btn"><i class="bi bi-trash"></i> Supprimer tout</button></h3>
+                        <div id="linkStats">
+                            <!-- Statistiques des liens générées par JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Gestion Boutique -->
+            <div class="boutique-admin">
+                <h3><i class="bi bi-shop"></i> Espace Boutique (Créer / Supprimer)</h3>
+                <div class="admin-row">
+                    <input type="text" id="newName" class="form-control" placeholder="Nom de la boutique">
+                    <input type="text" id="newLocation" class="form-control" placeholder="Localisation (ex: Kinshasa, RDC)">
+                    <input type="text" id="newHours" class="form-control" placeholder="Heures (ex: 8h-18h)">
+                    <select id="newCategory" class="form-select">
+                        <option value="divers">Divers</option>
+                        <option value="electronique">Électronique</option>
+                    </select>
+                </div>
+                <div class="admin-row">
+                    <input type="url" id="newImage" class="form-control" placeholder="URL de l'image (optionnel)">
+                    <input type="file" id="newImageFile" class="form-control" accept="image/*">
+                    <select id="newStatus" class="form-select">
+                        <option value="online">En ligne</option>
+                        <option value="offline">Hors ligne</option>
+                    </select>
+                    <input type="number" min="1" max="5" step="1" id="newRating" class="form-control" placeholder="Note (1-5)">
+                </div>
+                <div class="admin-row">
+                    <input type="text" id="newDescription" class="form-control" placeholder="Description courte">
+                </div>
+                <div class="admin-actions">
+                    <button id="createBoutiqueBtn" class="btn-admin"><i class="bi bi-check2-circle"></i> Ajouter la boutique</button>
+                    <button id="clearFormBtn" class="btn-admin-outline"><i class="bi bi-eraser"></i> Effacer le formulaire</button>
+                    <button id="clearCustomBtn" class="btn-admin-outline"><i class="bi bi-trash"></i> Supprimer les boutiques ajoutées</button>
+                    <button id="manageBoutiquesBtn" class="btn-admin-outline"><i class="bi bi-gear"></i> Gérer les boutiques</button>
+                </div>
+                <small class="admin-note">Les boutiques sont synchronisées avec la page Boutique via votre navigateur.</small>
+            </div>
+            <!-- Détails Boutiques (affichage inline) -->
+            <div class="boutique-admin" id="boutiquesInlineSection" style="display: none;">
+                <h3><i class="bi bi-list-ul"></i> Détails des Boutiques</h3>
+                <div id="boutiquesInlineContainer"></div>
+            </div>
+            <!-- Accès Offre (après Détails des Boutiques) -->
+            <div class="boutique-admin">
+                <h3><i class="bi bi-toggle2-on"></i> Accès Offre (navigation)</h3>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="me-3">
+                        <div class="fw-bold">Activer le lien "Offre" dans la barre de navigation</div>
+                        <small class="text-muted">Contrôle visible sur l'Accueil (`index.html`).</small>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="adminToggleOffre">
+                        <label class="form-check-label" for="adminToggleOffre">Activer</label>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <label class="form-label">Titre d'offre (affiché sur `offre.html`)</label>
+                    <div class="d-flex gap-2">
+                        <input type="text" id="adminOffreTitle" class="form-control" placeholder="Offre: Développeur(se) Web">
+                        <button id="saveOffreTitleBtn" class="btn-admin" type="button"><i class="bi bi-save"></i> Enregistrer</button>
+                    </div>
+                    <small class="text-muted">Le titre se met à jour côté visiteur à l'ouverture d'`offre.html`.</small>
+                </div>
+                <div class="mt-3">
+                    <label class="form-label">Description (ligne 1)</label>
+                    <textarea id="adminOffreDesc" class="form-control" rows="2" placeholder="Texte de description..."></textarea>
+                </div>
+                <div class="mt-3">
+                    <label class="form-label">Description (ligne 2)</label>
+                    <textarea id="adminOffreDesc2" class="form-control" rows="2" placeholder="Texte complémentaire ou badges..."></textarea>
+                    <div class="mt-2 d-flex gap-2">
+                        <button id="saveOffreDescsBtn" class="btn-admin" type="button"><i class="bi bi-save"></i> Enregistrer descriptions</button>
+                        <button id="clearOffreDescsBtn" class="btn-admin-outline" type="button"><i class="bi bi-x-circle"></i> Réinitialiser</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestion des Images -->
+            <div class="boutique-admin">
+                <h3><i class="bi bi-image"></i> Gestion des Images du Site</h3>
+                <p class="text-muted mb-3">Remplacez toutes les images du site web par vos propres images. Les modifications sont sauvegardées localement.</p>
+                
+                <!-- Navigation par catégorie -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="imageCategory" id="catAccueil" value="accueil" checked>
+                            <label class="btn btn-outline-primary" for="catAccueil">
+                                <i class="bi bi-house"></i> Accueil
+                            </label>
+                            
+                            <input type="radio" class="btn-check" name="imageCategory" id="catEquipe" value="equipe">
+                            <label class="btn btn-outline-primary" for="catEquipe">
+                                <i class="bi bi-people"></i> Équipe
+                            </label>
+                            
+                            <input type="radio" class="btn-check" name="imageCategory" id="catBoutique" value="boutique">
+                            <label class="btn btn-outline-primary" for="catBoutique">
+                                <i class="bi bi-shop"></i> Boutique
+                            </label>
+                            
+                            <input type="radio" class="btn-check" name="imageCategory" id="catProjets" value="projets">
+                            <label class="btn btn-outline-primary" for="catProjets">
+                                <i class="bi bi-folder"></i> Projets
+                            </label>
+                            
+                            <input type="radio" class="btn-check" name="imageCategory" id="catAutres" value="autres">
+                            <label class="btn btn-outline-primary" for="catAutres">
+                                <i class="bi bi-images"></i> Autres
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zone d'upload -->
+                <div class="upload-zone mb-4">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <i class="bi bi-cloud-upload" style="font-size: 3rem; color: #14B789;"></i>
+                            <h5>Glissez-déposez vos images ici</h5>
+                            <p class="text-muted">ou cliquez pour sélectionner des fichiers</p>
+                            <input type="file" id="imageUpload" multiple accept="image/*" style="display: none;">
+                            <button type="button" class="btn btn-primary" onclick="document.getElementById('imageUpload').click()">
+                                <i class="bi bi-plus-circle"></i> Sélectionner des images
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Liste des images par catégorie -->
+                <div id="imagesContainer">
+                    <!-- Les images seront chargées dynamiquement selon la catégorie sélectionnée -->
+                </div>
+
+                <!-- Actions globales -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" class="btn btn-success" id="saveAllImagesBtn">
+                                <i class="bi bi-save"></i> Sauvegarder toutes les modifications
+                            </button>
+                            <button type="button" class="btn btn-warning" id="resetImagesBtn">
+                                <i class="bi bi-arrow-clockwise"></i> Réinitialiser les images
+                            </button>
+                            <button type="button" class="btn btn-info" id="exportImagesBtn">
+                                <i class="bi bi-download"></i> Exporter la configuration
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="importImagesBtn">
+                                <i class="bi bi-upload"></i> Importer une configuration
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script>
+        // Vérifier l'authentification
+        function checkAuth() {
+            const isAuthenticated = sessionStorage.getItem('adminAuthenticated');
+            if (!isAuthenticated) {
+                window.location.href = 'admin-login.html';
+                return false;
+            }
+            return true;
+        }
+
+        // Déconnexion
+        function logout() {
+            sessionStorage.removeItem('adminAuthenticated');
+            sessionStorage.removeItem('adminLoginTime');
+            window.location.href = 'admin-login.html';
+        }
+
+        // Données simulées pour le dashboard
+        let dashboardData = {
+            totalVisitors: 0,
+            totalClicks: 0,
+            totalPages: 0,
+            avgTime: 0,
+            visitorsData: [],
+            pagesData: [],
+            recentActivity: [],
+            linkStats: []
+        };
+
+        // Charger les données depuis le localStorage ou initialiser
+        function loadData() {
+            const savedData = localStorage.getItem('digicreateam_analytics');
+            if (savedData) {
+                dashboardData = JSON.parse(savedData);
+            } else {
+                // Données par défaut
+                dashboardData = {
+                    totalVisitors: 1247,
+                    totalClicks: 3892,
+                    totalPages: 5678,
+                    avgTime: 145,
+                    visitorsData: [45, 52, 38, 67, 89, 76, 92, 85, 78, 95, 88, 102],
+                    pagesData: [
+                        { name: 'Accueil', views: 450 },
+                        { name: 'Services', views: 320 },
+                        { name: 'Équipe', views: 280 },
+                        { name: 'Boutique', views: 190 },
+                        { name: 'Contact', views: 150 }
+                    ],
+                    recentActivity: [
+                        { type: 'visit', title: 'Nouveau visiteur sur la page Accueil', time: 'Il y a 2 minutes' },
+                        { type: 'click', title: 'Clic sur le lien Services', time: 'Il y a 5 minutes' },
+                        { type: 'form', title: 'Formulaire de contact soumis', time: 'Il y a 8 minutes' },
+                        { type: 'visit', title: 'Visiteur sur la page Boutique', time: 'Il y a 12 minutes' },
+                        { type: 'click', title: 'Clic sur le lien Équipe', time: 'Il y a 15 minutes' }
+                    ],
+                    linkStats: [
+                        { url: 'index.html', clicks: 245 },
+                        { url: 'Ourteams.html', clicks: 189 },
+                        { url: 'Boutique.html', clicks: 156 },
+                        { url: '#section_3', clicks: 134 },
+                        { url: '#section_5', clicks: 98 }
+                    ]
+                };
+                saveData();
+            }
+        }
+
+        // Sauvegarder les données
+        function saveData() {
+            localStorage.setItem('digicreateam_analytics', JSON.stringify(dashboardData));
+        }
+
+        // Actualiser les données
+        function refreshData() {
+            // Simuler de nouvelles données
+            dashboardData.totalVisitors += Math.floor(Math.random() * 10);
+            dashboardData.totalClicks += Math.floor(Math.random() * 20);
+            dashboardData.totalPages += Math.floor(Math.random() * 15);
+            
+            // Ajouter une nouvelle activité
+            const activities = [
+                { type: 'visit', title: 'Nouveau visiteur sur la page Accueil', time: 'À l\'instant' },
+                { type: 'click', title: 'Clic sur un lien de navigation', time: 'À l\'instant' },
+                { type: 'form', title: 'Formulaire de contact soumis', time: 'À l\'instant' }
+            ];
+            
+            const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+            dashboardData.recentActivity.unshift(randomActivity);
+            if (dashboardData.recentActivity.length > 10) {
+                dashboardData.recentActivity.pop();
+            }
+            
+            saveData();
+            updateDashboard();
+        }
+
+        // Mettre à jour le dashboard
+        function updateDashboard() {
+            // Statistiques principales
+            this.updateMainStats(dashboardData);
+
+
+            // Statistiques des formulaires
+            this.updateFormStats(dashboardData);
+
+            // Statistiques des liens
+            this.updateLinkStats(dashboardData);
+
+            // Mettre à jour les graphiques
+            updateCharts();
+        }
+
+
+        // Mettre à jour les statistiques principales avec suivi quotidien
+        function updateMainStats(data) {
+            const today = new Date().toDateString();
+            
+            // Calculer les statistiques d'aujourd'hui
+            const todayVisitors = getTodayCount(data.pageViews, 'timestamp');
+            const todayClicks = getTodayCount(data.linkStats, 'timestamp');
+            const todayPages = getTodayCount(data.pageViews, 'timestamp');
+            const todayTime = getTodayTime(data.timeOnPage);
+            
+            // Calculer les tendances (comparaison avec hier)
+            const yesterdayVisitors = getYesterdayCount(data.pageViews, 'timestamp');
+            const yesterdayClicks = getYesterdayCount(data.linkStats, 'timestamp');
+            const yesterdayPages = getYesterdayCount(data.pageViews, 'timestamp');
+            const yesterdayTime = getYesterdayTime(data.timeOnPage);
+            
+            // Mettre à jour les totaux
+            document.getElementById('totalVisitors').textContent = data.totalVisitors.toLocaleString();
+            document.getElementById('totalClicks').textContent = data.totalClicks.toLocaleString();
+            document.getElementById('totalPages').textContent = data.totalPages.toLocaleString();
+            document.getElementById('avgTime').textContent = data.avgTime + 's';
+            
+            // Mettre à jour les statistiques d'aujourd'hui
+            document.getElementById('visitorsToday').textContent = `+${todayVisitors} aujourd'hui`;
+            document.getElementById('clicksToday').textContent = `+${todayClicks} aujourd'hui`;
+            document.getElementById('pagesToday').textContent = `+${todayPages} aujourd'hui`;
+            document.getElementById('timeToday').textContent = `+${todayTime}s aujourd'hui`;
+            
+            // Mettre à jour les tendances
+            updateTrend('visitorsTrend', todayVisitors, yesterdayVisitors);
+            updateTrend('clicksTrend', todayClicks, yesterdayClicks);
+            updateTrend('pagesTrend', todayPages, yesterdayPages);
+            updateTrend('timeTrend', todayTime, yesterdayTime);
+        }
+
+        // Obtenir le nombre d'éléments d'aujourd'hui
+        function getTodayCount(items, dateField) {
+            if (!items) return 0;
+            const today = new Date().toDateString();
+            return items.filter(item => {
+                const itemDate = new Date(item[dateField]).toDateString();
+                return itemDate === today;
+            }).length;
+        }
+
+        // Obtenir le nombre d'éléments d'hier
+        function getYesterdayCount(items, dateField) {
+            if (!items) return 0;
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayString = yesterday.toDateString();
+            return items.filter(item => {
+                const itemDate = new Date(item[dateField]).toDateString();
+                return itemDate === yesterdayString;
+            }).length;
+        }
+
+        // Obtenir le temps d'aujourd'hui
+        function getTodayTime(timeOnPage) {
+            if (!timeOnPage) return 0;
+            const today = new Date().toDateString();
+            const todayEntries = timeOnPage.filter(entry => {
+                const entryDate = new Date(entry.timestamp).toDateString();
+                return entryDate === today;
+            });
+            return todayEntries.reduce((sum, entry) => sum + entry.time, 0);
+        }
+
+        // Obtenir le temps d'hier
+        function getYesterdayTime(timeOnPage) {
+            if (!timeOnPage) return 0;
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayString = yesterday.toDateString();
+            const yesterdayEntries = timeOnPage.filter(entry => {
+                const entryDate = new Date(entry.timestamp).toDateString();
+                return entryDate === yesterdayString;
+            });
+            return yesterdayEntries.reduce((sum, entry) => sum + entry.time, 0);
+        }
+
+        // Mettre à jour les tendances
+        function updateTrend(elementId, today, yesterday) {
+            const trendElement = document.getElementById(elementId);
+            const trendIcon = trendElement.querySelector('i');
+            const trendText = trendElement.querySelector('span');
+            
+            if (yesterday === 0) {
+                trendText.textContent = '+100%';
+                trendIcon.className = 'bi bi-arrow-up';
+                trendElement.className = 'stat-trend';
+            } else {
+                const percentage = Math.round(((today - yesterday) / yesterday) * 100);
+                if (percentage >= 0) {
+                    trendText.textContent = `+${percentage}%`;
+                    trendIcon.className = 'bi bi-arrow-up';
+                    trendElement.className = 'stat-trend';
+                } else {
+                    trendText.textContent = `${percentage}%`;
+                    trendIcon.className = 'bi bi-arrow-down';
+                    trendElement.className = 'stat-trend down';
+                }
+            }
+        }
+
+        // Mettre à jour les statistiques des formulaires
+        function updateFormStats(data) {
+            // Calculer le total des formulaires
+            const totalForms = data.formSubmissions ? data.formSubmissions.length : 0;
+            document.getElementById('totalForms').textContent = totalForms;
+
+            // Calculer les formulaires d'aujourd'hui
+            const today = new Date().toDateString();
+            const todayForms = data.formSubmissions ? data.formSubmissions.filter(form => {
+                const formDate = new Date(form.timestamp).toDateString();
+                return formDate === today;
+            }).length : 0;
+            document.getElementById('todayForms').textContent = todayForms;
+
+            // Afficher l'activité des formulaires
+            const formActivityContainer = document.getElementById('formActivity');
+            formActivityContainer.innerHTML = '';
+
+            if (data.formSubmissions && data.formSubmissions.length > 0) {
+                // Prendre les 5 derniers formulaires
+                const recentForms = data.formSubmissions.slice(0, 5);
+                
+                recentForms.forEach(form => {
+                    const formDiv = document.createElement('div');
+                    formDiv.className = 'form-activity-item';
+                    
+                    const formTime = new Date(form.timestamp).toLocaleString('fr-FR', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        day: '2-digit',
+                        month: '2-digit'
+                    });
+                    
+                    const formName = form.formId !== 'sans-id' ? form.formId : 
+                                    form.formClass !== 'sans-classe' ? form.formClass : 
+                                    'Formulaire de contact';
+                    
+                    formDiv.innerHTML = `
+                        <div class="form-activity-icon">
+                            <i class="bi bi-form"></i>
+                        </div>
+                        <div class="form-activity-content">
+                            <div class="form-activity-title">${formName}</div>
+                            <div class="form-activity-time">${formTime} • ${form.fieldCount || 0} champs</div>
+                        </div>
+                    `;
+                    formActivityContainer.appendChild(formDiv);
+                });
+            } else {
+                formActivityContainer.innerHTML = `
+                    <div class="text-center text-muted py-3">
+                        <i class="bi bi-inbox" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Aucun formulaire soumis</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Mettre à jour les statistiques des liens
+        function updateLinkStats(data) {
+            const linkContainer = document.getElementById('linkStats');
+            linkContainer.innerHTML = '';
+
+            if (data.linkStats && data.linkStats.length > 0) {
+                // Trier les liens par nombre de clics
+                const sortedLinks = data.linkStats.sort((a, b) => b.clicks - a.clicks);
+                
+                sortedLinks.forEach((link, index) => {
+                    const linkDiv = document.createElement('div');
+                    linkDiv.className = 'link-item';
+                    
+                    // Déterminer l'icône selon le type de lien
+                    const getLinkIcon = (url) => {
+                        if (url.includes('index.html')) return 'bi-house';
+                        if (url.includes('Ourteams.html')) return 'bi-people';
+                        if (url.includes('Boutique.html')) return 'bi-shop';
+                        if (url.includes('admin-login.html')) return 'bi-shield-lock';
+                        if (url.includes('#section_')) return 'bi-arrow-down-circle';
+                        return 'bi-link-45deg';
+                    };
+                    
+                    // Déterminer la description du lien
+                    const getLinkDescription = (url) => {
+                        if (url.includes('index.html')) return 'Page d\'accueil principale';
+                        if (url.includes('Ourteams.html')) return 'Présentation de l\'équipe';
+                        if (url.includes('Boutique.html')) return 'Boutique en ligne';
+                        if (url.includes('admin-login.html')) return 'Connexion administrateur';
+                        if (url.includes('#section_2')) return 'Section À propos';
+                        if (url.includes('#section_3')) return 'Section Services';
+                        if (url.includes('#section_4')) return 'Section Projets';
+                        if (url.includes('#section_5')) return 'Section Contact';
+                        return 'Lien de navigation';
+                    };
+                    
+                    // Calculer la tendance (simulée)
+                    const trend = Math.random() > 0.5 ? 'up' : 'down';
+                    const trendValue = Math.floor(Math.random() * 20) + 1;
+                    
+                    // Déterminer le rang
+                    const rank = index + 1;
+                    const rankText = rank <= 3 ? `#${rank}` : `#${rank}`;
+                    
+                    linkDiv.innerHTML = `
+                        <div class="link-icon">
+                            <i class="${getLinkIcon(link.url)}"></i>
+                        </div>
+                        <div class="link-content">
+                            <a href="${link.url}" class="link-url" target="_blank">${link.url}</a>
+                            <div class="link-description">${getLinkDescription(link.url)}</div>
+                        </div>
+                        <div class="link-stats">
+                            <span class="link-rank">${rankText}</span>
+                            <span class="link-count">${link.clicks}</span>
+                            <div class="link-trend ${trend}">
+                                <i class="bi bi-arrow-${trend === 'up' ? 'up' : 'down'}"></i>
+                                ${trendValue}%
+                            </div>
+                            <button class="link-delete-btn" data-url="${link.url}"><i class="bi bi-x-circle"></i> Supprimer</button>
+                        </div>
+                    `;
+                    linkContainer.appendChild(linkDiv);
+                });
+
+                // Attacher les gestionnaires de suppression
+                linkContainer.querySelectorAll('.link-delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const url = this.getAttribute('data-url');
+                        deleteLinkStat(url);
+                    });
+                });
+            } else {
+                linkContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-link-45deg"></i>
+                        <p>Aucun lien cliqué</p>
+                        <small>Les statistiques apparaîtront après les premiers clics</small>
+                    </div>
+                `;
+            }
+        }
+
+        // Supprimer un lien des statistiques
+        function deleteLinkStat(url) {
+            if (!dashboardData.linkStats) return;
+            dashboardData.linkStats = dashboardData.linkStats.filter(item => item.url !== url);
+            saveData();
+            updateLinkStats(dashboardData);
+        }
+
+        // Mettre à jour les graphiques
+        function updateCharts() {
+            // Graphique des visiteurs
+            const visitorsCtx = document.getElementById('visitorsChart').getContext('2d');
+            new Chart(visitorsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
+                    datasets: [{
+                        label: 'Visiteurs',
+                        data: dashboardData.visitorsData,
+                        borderColor: '#14B789',
+                        backgroundColor: 'rgba(20, 183, 137, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Graphique des pages
+            const pagesCtx = document.getElementById('pagesChart').getContext('2d');
+            new Chart(pagesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: dashboardData.pagesData.map(page => page.name),
+                    datasets: [{
+                        data: dashboardData.pagesData.map(page => page.views),
+                        backgroundColor: [
+                            '#14B789',
+                            '#667eea',
+                            '#f093fb',
+                            '#4facfe',
+                            '#43e97b'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Graphique des formulaires par jour
+        function createFormsChart() {
+            const formsCtx = document.getElementById('formsChart').getContext('2d');
+            new Chart(formsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+                    datasets: [{
+                        label: 'Formulaires Soumis',
+                        data: [2, 4, 3, 6, 5, 8, 4],
+                        backgroundColor: 'rgba(240, 147, 251, 0.8)',
+                        borderColor: '#f093fb',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Graphique des types de formulaires
+        function createFormTypesChart() {
+            const formTypesCtx = document.getElementById('formTypesChart').getContext('2d');
+            new Chart(formTypesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Contact', 'Inscription', 'Newsletter', 'Support'],
+                    datasets: [{
+                        data: [45, 25, 20, 10],
+                        backgroundColor: [
+                            '#f093fb',
+                            '#667eea',
+                            '#4facfe',
+                            '#43e97b'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            if (checkAuth()) {
+                loadData();
+                updateDashboard();
+                
+                // Créer les graphiques des formulaires
+                createFormsChart();
+                createFormTypesChart();
+                
+                // Actualiser automatiquement toutes les 30 secondes
+                setInterval(refreshData, 30000);
+
+                // Initialiser la gestion boutique (localStorage)
+                initBoutiqueAdmin();
+
+                // Initialiser la gestion des images
+                initImageManagement();
+
+                // Bouton suppression totale des liens
+                const clearAllBtn = document.getElementById('clearAllLinksBtn');
+                if (clearAllBtn) {
+                    clearAllBtn.addEventListener('click', function() {
+                        if (confirm('Supprimer toutes les statistiques de liens ?')) {
+                            dashboardData.linkStats = [];
+                            saveData();
+                            updateLinkStats(dashboardData);
+                        }
+                    });
+                }
+
+                // Synchroniser la section inline avec les changements de storage (overrides/customs)
+                window.addEventListener('storage', function(e) {
+                    const section = document.getElementById('boutiquesInlineSection');
+                    if (section && section.style.display !== 'none') {
+                        if (e.key === 'boutiqueOverrides' || e.key === BOUTIQUES_KEY) {
+                            renderBoutiquesListInline();
+                        }
+                    }
+                });
+
+                // Initialiser le toggle d'accès Offre
+                const adminToggleOffre = document.getElementById('adminToggleOffre');
+                if (adminToggleOffre) {
+                    const saved = localStorage.getItem('offreLinkEnabled');
+                    const enabled = saved === null ? true : saved === 'true';
+                    adminToggleOffre.checked = enabled;
+                    adminToggleOffre.addEventListener('change', function() {
+                        const state = adminToggleOffre.checked;
+                        localStorage.setItem('offreLinkEnabled', String(state));
+                    });
+                }
+
+                // Initialiser l'édition du titre d'offre
+                const adminOffreTitle = document.getElementById('adminOffreTitle');
+                const saveOffreTitleBtn = document.getElementById('saveOffreTitleBtn');
+                if (adminOffreTitle && saveOffreTitleBtn) {
+                    try {
+                        const savedTitle = localStorage.getItem('offreTitleText');
+                        if (savedTitle && savedTitle.trim() !== '') adminOffreTitle.value = savedTitle;
+                    } catch(e) {}
+                    saveOffreTitleBtn.addEventListener('click', function(){
+                        const value = (adminOffreTitle.value || '').trim() || 'Offre: Développeur(se) Web';
+                        localStorage.setItem('offreTitleText', value);
+                        alert('Titre d\'offre enregistré.');
+                    });
+                }
+
+                // Initialiser édition descriptions Offre
+                const adminOffreDesc = document.getElementById('adminOffreDesc');
+                const adminOffreDesc2 = document.getElementById('adminOffreDesc2');
+                const saveOffreDescsBtn = document.getElementById('saveOffreDescsBtn');
+                const clearOffreDescsBtn = document.getElementById('clearOffreDescsBtn');
+                if (adminOffreDesc && adminOffreDesc2 && saveOffreDescsBtn && clearOffreDescsBtn) {
+                    try {
+                        const s1 = localStorage.getItem('offreDescText');
+                        const s2 = localStorage.getItem('offreDesc2Text');
+                        if (s1 && s1.trim() !== '') adminOffreDesc.value = s1;
+                        if (s2 && s2.trim() !== '') adminOffreDesc2.value = s2;
+                    } catch(e) {}
+                    saveOffreDescsBtn.addEventListener('click', function(){
+                        const v1 = (adminOffreDesc.value || '').trim();
+                        const v2 = (adminOffreDesc2.value || '').trim();
+                        localStorage.setItem('offreDescText', v1);
+                        localStorage.setItem('offreDesc2Text', v2);
+                        alert('Descriptions enregistrées.');
+                    });
+                    clearOffreDescsBtn.addEventListener('click', function(){
+                        localStorage.removeItem('offreDescText');
+                        localStorage.removeItem('offreDesc2Text');
+                        adminOffreDesc.value = '';
+                        adminOffreDesc2.value = '';
+                        alert('Descriptions réinitialisées.');
+                    });
+                }
+            }
+        });
+        
+        // --- Gestion Boutique: création/suppression avec localStorage partagé avec Boutique.html ---
+        const BOUTIQUES_KEY = 'boutiquesCustom';
+        function getBoutiques() {
+            try { return JSON.parse(localStorage.getItem(BOUTIQUES_KEY) || '[]'); } catch(e) { return []; }
+        }
+        function saveBoutiques(items) { localStorage.setItem(BOUTIQUES_KEY, JSON.stringify(items)); }
+        function clearBoutiqueForm() {
+            ['newName','newLocation','newHours','newImage','newDescription','newRating'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+            const cat = document.getElementById('newCategory'); if (cat) cat.value = 'divers';
+            const st = document.getElementById('newStatus'); if (st) st.value = 'online';
+            const file = document.getElementById('newImageFile'); if (file) file.value = '';
+            window.__boutiqueImageDataUrl = undefined;
+        }
+        function initBoutiqueAdmin() {
+            // Handle file input -> data URL
+            const fileInput = document.getElementById('newImageFile');
+            if (fileInput) {
+                fileInput.addEventListener('change', function() {
+                    const file = this.files && this.files[0];
+                    if (!file) { window.__boutiqueImageDataUrl = undefined; return; }
+                    const reader = new FileReader();
+                    reader.onload = function(e) { window.__boutiqueImageDataUrl = e.target.result; };
+                    reader.readAsDataURL(file);
+                });
+            }
+            const createBtn = document.getElementById('createBoutiqueBtn');
+            if (createBtn) {
+                createBtn.addEventListener('click', function() {
+                    const data = {
+                        id: 'b_' + Date.now(),
+                        name: (document.getElementById('newName').value || '').trim(),
+                        location: (document.getElementById('newLocation').value || '').trim(),
+                        hours: (document.getElementById('newHours').value || '').trim(),
+                        category: document.getElementById('newCategory').value,
+                        image: (document.getElementById('newImage').value || '').trim(),
+                        imageDataUrl: window.__boutiqueImageDataUrl || '',
+                        status: document.getElementById('newStatus').value,
+                        rating: document.getElementById('newRating').value,
+                        description: (document.getElementById('newDescription').value || '').trim()
+                    };
+                    if (!data.name || !data.location || !data.hours) { alert('Veuillez renseigner au minimum: Nom, Localisation et Heures.'); return; }
+                    const items = getBoutiques();
+                    items.push(data);
+                    saveBoutiques(items);
+                    clearBoutiqueForm();
+                    alert('Boutique ajoutée. Ouvrez/rafraîchissez Boutique.html pour la voir.');
+                });
+            }
+            const clearBtn = document.getElementById('clearFormBtn');
+            if (clearBtn) clearBtn.addEventListener('click', clearBoutiqueForm);
+            const clearCustomBtn = document.getElementById('clearCustomBtn');
+            if (clearCustomBtn) {
+                clearCustomBtn.addEventListener('click', function() {
+                    if (confirm('Supprimer toutes les boutiques ajoutées (personnalisées) ?')) {
+                        saveBoutiques([]);
+                        alert('Boutiques personnalisées supprimées. Rafraîchissez Boutique.html.');
+                    }
+                });
+            }
+
+            // Ouvrir modal gestion
+            const manageBtn = document.getElementById('manageBoutiquesBtn');
+            if (manageBtn) {
+                manageBtn.addEventListener('click', function() {
+                    // Inline rendering instead of modal
+                    toggleBoutiquesInline();
+                });
+            }
+        }
+
+        // Boutiques par défaut de Boutique.html (lecture seule côté admin)
+        function getDefaultBoutiques() {
+            return [
+                {
+                    id: 'def_dumiya',
+                    name: 'DUMIYA',
+                    location: 'Kinshasa, RDC',
+                    hours: '8h-18h',
+                    category: 'divers',
+                    image: 'images/Presentation .jpg',
+                    status: 'online',
+                    rating: 3,
+                    description: 'Boutique spécialisée dans les produits divers et variés pour tous vos besoins quotidiens.',
+                    __default: true
+                },
+                {
+                    id: 'def_kikuu',
+                    name: 'KIKUU',
+                    location: 'Lubumbashi, RDC',
+                    hours: '9h-19h',
+                    category: 'divers',
+                    image: 'images/kikuu.jpg',
+                    status: 'online',
+                    rating: 2,
+                    description: 'Votre partenaire de confiance pour tous vos achats quotidiens avec un service de qualité.',
+                    __default: true
+                },
+                {
+                    id: 'def_stylebydiva',
+                    name: 'STYLEBYDIVA',
+                    location: 'Katanga, RDC',
+                    hours: '7h-20h',
+                    category: 'divers',
+                    image: 'images/divaboutique.jpg',
+                    status: 'online',
+                    rating: 4,
+                    description: 'Boutique de mode et style pour tous vos besoins vestimentaires et accessoires tendance.',
+                    __default: true
+                },
+                {
+                    id: 'def_mendo',
+                    name: 'MENDO',
+                    location: 'Kinshasa, RDC',
+                    hours: '8h-17h',
+                    category: 'electronique',
+                    image: 'images/ordi.jpg',
+                    status: 'online',
+                    rating: 4,
+                    description: 'Spécialiste en équipements informatiques et électroniques de haute qualité.',
+                    __default: true
+                },
+                {
+                    id: 'def_wakiki',
+                    name: 'WAKIKI',
+                    location: 'Matadi, RDC',
+                    hours: '9h-18h',
+                    category: 'electronique',
+                    image: 'images/drone.jpg',
+                    status: 'online',
+                    rating: 4,
+                    description: 'Technologies avancées et équipements électroniques pour professionnels et particuliers.',
+                    __default: true
+                },
+                {
+                    id: 'def_matos',
+                    name: 'MATOS',
+                    location: 'Kinshasa, RDC',
+                    hours: '10h-16h',
+                    category: 'electronique',
+                    image: 'images/electro.jpg',
+                    status: 'offline',
+                    rating: 1,
+                    description: 'Matériel électronique et composants pour réparations et projets DIY.',
+                    __default: true
+                }
+            ];
+        }
+
+        function getBoutiqueOverrides() {
+            try { return JSON.parse(localStorage.getItem('boutiqueOverrides') || '{}'); } catch (_) { return {}; }
+        }
+
+        function getDefaultBoutiquesMerged() {
+            const defaults = getDefaultBoutiques();
+            const overrides = getBoutiqueOverrides();
+            return defaults.map(d => {
+                const o = overrides[d.name];
+                if (!o) return d;
+                return {
+                    ...d,
+                    // if name override exists, display it while keeping id and __default
+                    name: o.name !== undefined ? o.name : d.name,
+                    location: o.location !== undefined ? o.location : d.location,
+                    hours: o.hours !== undefined ? o.hours : d.hours,
+                    category: o.category !== undefined ? o.category : d.category,
+                    image: o.image !== undefined ? o.image : d.image,
+                    status: o.status !== undefined ? o.status : d.status,
+                    rating: o.rating !== undefined ? o.rating : d.rating,
+                    description: o.description !== undefined ? o.description : d.description
+                };
+            });
+        }
+
+        function toggleBoutiquesInline() {
+            const section = document.getElementById('boutiquesInlineSection');
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                renderBoutiquesListInline();
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                section.style.display = 'none';
+            }
+        }
+
+        function renderBoutiquesListInline() {
+            const container = document.getElementById('boutiquesInlineContainer');
+            const defaults = getDefaultBoutiquesMerged();
+            const customs = getBoutiques();
+            const items = [...defaults, ...customs];
+            if (!items || items.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="bi bi-shop"></i><p>Aucune boutique personnalisée</p><small>Ajoutez-en via le formulaire ci-dessus</small></div>';
+                return;
+            }
+            container.innerHTML = '';
+            items.forEach((b) => {
+                const row = document.createElement('div');
+                row.className = 'boutique-row';
+                const isDefault = !!b.__default;
+                row.innerHTML = `
+                    <div class="info">
+                        <span class="boutique-name">${b.name || ''}</span>
+                        <span class="text-muted"><i class="bi bi-geo-alt"></i> ${b.location || ''}</span>
+                        <span class="badge-cat">${b.category === 'electronique' ? 'Électronique' : 'Divers'}</span>
+                        <span class="badge-status ${b.status === 'offline' ? 'offline' : 'online'}">${b.status === 'offline' ? 'Hors ligne' : 'En ligne'}</span>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-edit-boutique" data-action="edit" data-id="${b.id}"><i class="bi bi-pencil"></i> Modifier</button>
+                        ${isDefault ? '' : `<button class="btn-delete-boutique" data-action="delete" data-id="${b.id}"><i class="bi bi-trash"></i> Supprimer</button>`}
+                    </div>
+                `;
+                container.appendChild(row);
+
+                const editor = document.createElement('div');
+                editor.className = 'inline-editor';
+                editor.style.display = 'none';
+                editor.setAttribute('data-editor-for', b.id);
+                editor.innerHTML = `
+                    <div class="row-grid">
+                        <div>
+                            <label class="form-label">Nom</label>
+                            <input class="form-control" value="${b.name || ''}" data-field="name" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Localisation</label>
+                            <input class="form-control" value="${b.location || ''}" data-field="location" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Heures</label>
+                            <input class="form-control" value="${b.hours || ''}" data-field="hours" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Catégorie</label>
+                            <select class="form-select" data-field="category" data-id="${b.id}">
+                                <option value="divers" ${b.category === 'divers' ? 'selected' : ''}>Divers</option>
+                                <option value="electronique" ${b.category === 'electronique' ? 'selected' : ''}>Électronique</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Image (URL)</label>
+                            <input class="form-control" value="${b.image || ''}" data-field="image" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Statut</label>
+                            <select class="form-select" data-field="status" data-id="${b.id}">
+                                <option value="online" ${b.status === 'online' ? 'selected' : ''}>En ligne</option>
+                                <option value="offline" ${b.status === 'offline' ? 'selected' : ''}>Hors ligne</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Note</label>
+                            <input type="number" min="1" max="5" step="1" class="form-control" value="${b.rating || ''}" data-field="rating" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Description</label>
+                            <input class="form-control" value="${b.description || ''}" data-field="description" data-id="${b.id}">
+                        </div>
+                    </div>
+                    <div class="boutique-item-actions" style="margin-top:.6rem">
+                        <button class="btn-save-boutique" data-action="save-inline" data-id="${b.id}"><i class="bi bi-check2-circle"></i> Enregistrer</button>
+                        <button class="btn-admin-outline" data-action="cancel-inline" data-id="${b.id}"><i class="bi bi-x-circle"></i> Annuler</button>
+                    </div>
+                `;
+                container.appendChild(editor);
+            });
+            container.querySelectorAll('[data-action="edit"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const editor = container.querySelector(`[data-editor-for="${id}"]`);
+                    if (!editor) return;
+                    editor.style.display = (editor.style.display === 'none') ? 'block' : 'none';
+                });
+            });
+            container.querySelectorAll('[data-action="delete"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    deleteBoutiqueInline(id);
+                });
+            });
+            container.querySelectorAll('[data-action="save-inline"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    saveOrCloneBoutiqueInline(id);
+                });
+            });
+            container.querySelectorAll('[data-action="cancel-inline"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const editor = container.querySelector(`[data-editor-for="${id}"]`);
+                    if (editor) editor.style.display = 'none';
+                });
+            });
+        }
+
+        function saveOrCloneBoutiqueInline(id) {
+            const defaults = getDefaultBoutiques();
+            const isDefault = defaults.some(d => d.id === id);
+            const container = document.getElementById('boutiquesInlineContainer');
+            const fields = container.querySelectorAll(`[data-id="${id}"]`);
+            const updated = {};
+            fields.forEach(el => {
+                const field = el.getAttribute('data-field');
+                if (!field) return;
+                updated[field] = el.value;
+            });
+
+            if (isDefault) {
+                // Save overrides for default boutique (keyed by original default name)
+                const base = defaults.find(d => d.id === id) || {};
+                let overrides = {};
+                try { overrides = JSON.parse(localStorage.getItem('boutiqueOverrides') || '{}'); } catch (_) { overrides = {}; }
+                const key = base.name || id;
+                overrides[key] = {
+                    name: (updated.name !== undefined ? updated.name : base.name) || base.name || '',
+                    location: updated.location || base.location || '',
+                    hours: updated.hours || base.hours || '',
+                    category: updated.category || base.category || 'divers',
+                    image: updated.image || base.image || '',
+                    status: updated.status || base.status || 'online',
+                    rating: updated.rating || base.rating || 3,
+                    description: (updated.description !== undefined ? updated.description : base.description) || ''
+                };
+                localStorage.setItem('boutiqueOverrides', JSON.stringify(overrides));
+                alert('Modifications enregistrées pour la boutique par défaut.');
+            } else {
+                // Update existing custom
+                const items = getBoutiques();
+                const idx = items.findIndex(x => x.id === id);
+                if (idx !== -1) {
+                    items[idx] = { ...items[idx], ...updated };
+                    saveBoutiques(items);
+                    alert('Boutique personnalisée mise à jour.');
+                }
+            }
+
+            // Hide editor and refresh list
+            const editor = container.querySelector(`[data-editor-for="${id}"]`);
+            if (editor) editor.style.display = 'none';
+            renderBoutiquesListInline();
+        }
+
+        function deleteBoutiqueInline(id) {
+            if (!confirm('Supprimer cette boutique ?')) return;
+            const items = getBoutiques().filter(b => b.id !== id);
+            saveBoutiques(items);
+            renderBoutiquesListInline();
+        }
+
+        function openManageBoutiquesModal() {
+            const modal = document.getElementById('manageBoutiquesModal');
+            const closeBtn = document.getElementById('closeManageBoutiques');
+            renderBoutiquesList();
+            modal.classList.add('show');
+            modal.setAttribute('aria-hidden', 'false');
+            function close() {
+                modal.classList.remove('show');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+            closeBtn.onclick = close;
+            modal.addEventListener('click', function(e){ if (e.target === modal) close(); });
+        }
+
+        function renderBoutiquesList() {
+            const container = document.getElementById('boutiquesListContainer');
+            const items = getBoutiques();
+            if (!items || items.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="bi bi-shop"></i><p>Aucune boutique personnalisée</p><small>Ajoutez-en via le formulaire ci-dessus</small></div>';
+                return;
+            }
+            container.innerHTML = '';
+            items.forEach((b) => {
+                const card = document.createElement('div');
+                card.className = 'boutique-item-card';
+                card.innerHTML = `
+                    <div class="boutique-item-grid">
+                        <div>
+                            <label class="form-label">Nom</label>
+                            <input class="form-control" value="${b.name || ''}" data-field="name" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Localisation</label>
+                            <input class="form-control" value="${b.location || ''}" data-field="location" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Heures</label>
+                            <input class="form-control" value="${b.hours || ''}" data-field="hours" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Catégorie</label>
+                            <input class="form-control" value="${b.category || ''}" data-field="category" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Image (URL)</label>
+                            <input class="form-control" value="${b.image || ''}" data-field="image" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Statut</label>
+                            <select class="form-select" data-field="status" data-id="${b.id}">
+                                <option value="online" ${b.status === 'online' ? 'selected' : ''}>En ligne</option>
+                                <option value="offline" ${b.status === 'offline' ? 'selected' : ''}>Hors ligne</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Note</label>
+                            <input type="number" min="1" max="5" step="1" class="form-control" value="${b.rating || ''}" data-field="rating" data-id="${b.id}">
+                        </div>
+                        <div>
+                            <label class="form-label">Description</label>
+                            <input class="form-control" value="${b.description || ''}" data-field="description" data-id="${b.id}">
+                        </div>
+                    </div>
+                    <div class="boutique-item-actions">
+                        <button class="btn-save-boutique" data-action="save" data-id="${b.id}"><i class="bi bi-check2-circle"></i> Enregistrer</button>
+                        <button class="btn-delete-boutique" data-action="delete" data-id="${b.id}"><i class="bi bi-trash"></i> Supprimer</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            // Attach handlers
+            container.querySelectorAll('[data-action="save"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    saveBoutiqueEdits(id);
+                });
+            });
+            container.querySelectorAll('[data-action="delete"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    deleteBoutique(id);
+                });
+            });
+        }
+
+        function saveBoutiqueEdits(id) {
+            const items = getBoutiques();
+            const idx = items.findIndex(x => x.id === id);
+            if (idx === -1) return;
+            const container = document.getElementById('boutiquesListContainer');
+            const fields = container.querySelectorAll(`[data-id="${id}"]`);
+            const updated = { ...items[idx] };
+            fields.forEach(el => {
+                const field = el.getAttribute('data-field');
+                if (!field) return;
+                if (el.tagName === 'SELECT') {
+                    updated[field] = el.value;
+                } else {
+                    updated[field] = el.value;
+                }
+            });
+            items[idx] = updated;
+            saveBoutiques(items);
+            alert('Boutique enregistrée.');
+        }
+
+        function deleteBoutique(id) {
+            if (!confirm('Supprimer cette boutique ?')) return;
+            const items = getBoutiques().filter(b => b.id !== id);
+            saveBoutiques(items);
+            renderBoutiquesList();
+        }
+
+        // --- Gestion des Images ---
+        const IMAGES_STORAGE_KEY = 'siteImagesConfig';
+        let currentImageCategory = 'accueil';
+        let imageModifications = {};
+
+        // Configuration des images par catégorie
+        const imageCategories = {
+            accueil: [
+                { id: 'hero-bg', name: 'Image de fond principale', path: 'images/couple-working-from-home-together-sofa.jpg', description: 'Image de fond de la section hero' },
+                { id: 'about-bg', name: 'Image section À propos', path: 'images/white-desk-work-study-aesthetics.jpg', description: 'Image de fond de la section À propos' },
+                { id: 'services-bg', name: 'Image section Services', path: 'images/aerial-view-man-using-computer-laptop-wooden-table.jpg', description: 'Image de fond de la section Services' },
+                { id: 'contact-bg', name: 'Image section Contact', path: 'images/handshake-man-woman-after-signing-business-contract-closeup.jpg', description: 'Image de fond de la section Contact' }
+            ],
+            equipe: [
+                { id: 'person-1', name: 'Membre équipe 1', path: 'images/person_1.jpg', description: 'Photo du premier membre de l\'équipe' },
+                { id: 'person-2', name: 'Membre équipe 2', path: 'images/person_2.jpg', description: 'Photo du deuxième membre de l\'équipe' },
+                { id: 'person-3', name: 'Membre équipe 3', path: 'images/person_3.jpg', description: 'Photo du troisième membre de l\'équipe' },
+                { id: 'person-4', name: 'Membre équipe 4', path: 'images/person_4.jpg', description: 'Photo du quatrième membre de l\'équipe' }
+            ],
+            boutique: [
+                { id: 'boutique-dumiya', name: 'Boutique DUMIYA', path: 'images/Presentation .jpg', description: 'Image de la boutique DUMIYA' },
+                { id: 'boutique-kikuu', name: 'Boutique KIKUU', path: 'images/kikuu.jpg', description: 'Image de la boutique KIKUU' },
+                { id: 'boutique-style', name: 'Boutique STYLEBYDIVA', path: 'images/divaboutique.jpg', description: 'Image de la boutique STYLEBYDIVA' },
+                { id: 'boutique-mendo', name: 'Boutique MENDO', path: 'images/ordi.jpg', description: 'Image de la boutique MENDO' },
+                { id: 'boutique-wakiki', name: 'Boutique WAKIKI', path: 'images/drone.jpg', description: 'Image de la boutique WAKIKI' },
+                { id: 'boutique-matos', name: 'Boutique MATOS', path: 'images/electro.jpg', description: 'Image de la boutique MATOS' }
+            ],
+            projets: [
+                { id: 'project-1', name: 'Projet 1', path: 'images/projects/nikhil-KO4io-eCAXA-unsplash.jpg', description: 'Premier projet réalisé' },
+                { id: 'project-2', name: 'Projet 2', path: 'images/projects/the-5th-IQYR7N67dhM-unsplash.jpg', description: 'Deuxième projet réalisé' },
+                { id: 'project-3', name: 'Projet 3', path: 'images/projects/true-agency-9Bjog5FZ-oc-unsplash.jpg', description: 'Troisième projet réalisé' }
+            ],
+            autres: [
+                { id: 'logo', name: 'Logo DigiCreaTeam', path: 'images/Digicreateam Blanc.png', description: 'Logo principal de l\'entreprise' },
+                { id: 'favicon', name: 'Favicon', path: 'favicon.png', description: 'Icône du site web' },
+                { id: 'recrute', name: 'Image recrutement', path: 'images/recrute.jpg', description: 'Image pour la section recrutement' },
+                { id: 'product-1', name: 'Produit 1', path: 'images/product-1.png', description: 'Premier produit' },
+                { id: 'product-2', name: 'Produit 2', path: 'images/product-2.png', description: 'Deuxième produit' },
+                { id: 'product-3', name: 'Produit 3', path: 'images/product-3.png', description: 'Troisième produit' }
+            ]
+        };
+
+        // Initialiser la gestion des images
+        function initImageManagement() {
+            loadImageModifications();
+            setupImageUpload();
+            setupCategorySwitching();
+            setupImageActions();
+            renderCurrentCategoryImages();
+        }
+
+        // Charger les modifications d'images depuis le localStorage
+        function loadImageModifications() {
+            try {
+                const saved = localStorage.getItem(IMAGES_STORAGE_KEY);
+                imageModifications = saved ? JSON.parse(saved) : {};
+            } catch (e) {
+                imageModifications = {};
+            }
+        }
+
+        // Sauvegarder les modifications d'images
+        function saveImageModifications() {
+            localStorage.setItem(IMAGES_STORAGE_KEY, JSON.stringify(imageModifications));
+        }
+
+        // Configurer l'upload d'images
+        function setupImageUpload() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('imageUpload');
+
+            // Drag and drop
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('drag-over');
+            });
+
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+            });
+
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+                const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+                handleImageUpload(files);
+            });
+
+            // Click to upload
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', function() {
+                const files = Array.from(this.files);
+                handleImageUpload(files);
+            });
+        }
+
+        // Gérer l'upload d'images
+        function handleImageUpload(files) {
+            if (files.length === 0) return;
+
+            // Afficher un indicateur de progression
+            showUploadProgress();
+
+            files.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageData = {
+                        name: file.name,
+                        dataUrl: e.target.result,
+                        size: file.size,
+                        type: file.type,
+                        uploadDate: new Date().toISOString()
+                    };
+
+                    // Ajouter l'image à la catégorie courante
+                    addImageToCategory(imageData);
+                    
+                    if (index === files.length - 1) {
+                        hideUploadProgress();
+                        renderCurrentCategoryImages();
+                        alert(`${files.length} image(s) ajoutée(s) avec succès !`);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Ajouter une image à la catégorie courante
+        function addImageToCategory(imageData) {
+            const imageId = `custom_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            const customImage = {
+                id: imageId,
+                name: imageData.name,
+                path: `custom/${imageData.name}`,
+                description: `Image personnalisée: ${imageData.name}`,
+                dataUrl: imageData.dataUrl,
+                size: imageData.size,
+                type: imageData.type,
+                uploadDate: imageData.uploadDate,
+                isCustom: true
+            };
+
+            if (!imageModifications[currentImageCategory]) {
+                imageModifications[currentImageCategory] = [];
+            }
+            imageModifications[currentImageCategory].push(customImage);
+            saveImageModifications();
+        }
+
+        // Configurer le changement de catégorie
+        function setupCategorySwitching() {
+            const categoryRadios = document.querySelectorAll('input[name="imageCategory"]');
+            categoryRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        currentImageCategory = this.value;
+                        renderCurrentCategoryImages();
+                    }
+                });
+            });
+        }
+
+        // Rendre les images de la catégorie courante
+        function renderCurrentCategoryImages() {
+            const container = document.getElementById('imagesContainer');
+            const categoryImages = imageCategories[currentImageCategory] || [];
+            const customImages = imageModifications[currentImageCategory] || [];
+            const allImages = [...categoryImages, ...customImages];
+
+            if (allImages.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-image" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <p>Aucune image dans cette catégorie</p>
+                        <small>Uploadez des images pour commencer</small>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="image-grid">
+                    ${allImages.map(image => renderImageCard(image)).join('')}
+                </div>
+            `;
+
+            // Attacher les gestionnaires d'événements
+            attachImageEventHandlers();
+        }
+
+        // Rendre une carte d'image
+        function renderImageCard(image) {
+            const isModified = imageModifications[currentImageCategory]?.some(mod => mod.id === image.id);
+            const status = image.isCustom ? 'new' : (isModified ? 'modified' : 'original');
+            const statusText = image.isCustom ? 'Nouvelle' : (isModified ? 'Modifiée' : 'Originale');
+
+            return `
+                <div class="image-card ${isModified ? 'modified' : ''}" data-image-id="${image.id}">
+                    <div class="image-status status-${status}">${statusText}</div>
+                    <img src="${image.dataUrl || image.path}" alt="${image.name}" class="image-preview" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04MCA2MEgxMjBWOTBIODBWNjBaIiBmaWxsPSIjQ0NDQ0NDIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiPkltYWdlIG5vbiBkaXNwb25pYmxlPC90ZXh0Pgo8L3N2Zz4K'">
+                    <div class="image-info">
+                        <div class="image-name">${image.name}</div>
+                        <div class="image-path">${image.path}</div>
+                        ${image.description ? `<small class="text-muted">${image.description}</small>` : ''}
+                    </div>
+                    <div class="image-actions">
+                        <button class="btn-image-action btn-replace" data-action="replace" data-image-id="${image.id}">
+                            <i class="bi bi-arrow-repeat"></i> Remplacer
+                        </button>
+                        <button class="btn-image-action btn-preview" data-action="preview" data-image-id="${image.id}">
+                            <i class="bi bi-eye"></i> Prévisualiser
+                        </button>
+                        ${!image.isCustom ? `
+                            <button class="btn-image-action btn-reset" data-action="reset" data-image-id="${image.id}">
+                                <i class="bi bi-arrow-clockwise"></i> Réinitialiser
+                            </button>
+                        ` : `
+                            <button class="btn-image-action btn-reset" data-action="delete" data-image-id="${image.id}">
+                                <i class="bi bi-trash"></i> Supprimer
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Attacher les gestionnaires d'événements pour les images
+        function attachImageEventHandlers() {
+            // Bouton remplacer
+            document.querySelectorAll('[data-action="replace"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const imageId = this.getAttribute('data-image-id');
+                    replaceImage(imageId);
+                });
+            });
+
+            // Bouton prévisualiser
+            document.querySelectorAll('[data-action="preview"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const imageId = this.getAttribute('data-image-id');
+                    previewImage(imageId);
+                });
+            });
+
+            // Bouton réinitialiser
+            document.querySelectorAll('[data-action="reset"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const imageId = this.getAttribute('data-image-id');
+                    resetImage(imageId);
+                });
+            });
+
+            // Bouton supprimer
+            document.querySelectorAll('[data-action="delete"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const imageId = this.getAttribute('data-image-id');
+                    deleteImage(imageId);
+                });
+            });
+        }
+
+        // Remplacer une image
+        function replaceImage(imageId) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Trouver l'image dans la catégorie courante
+                    const categoryImages = imageCategories[currentImageCategory] || [];
+                    const image = categoryImages.find(img => img.id === imageId);
+                    
+                    if (image) {
+                        // Créer une modification
+                        if (!imageModifications[currentImageCategory]) {
+                            imageModifications[currentImageCategory] = [];
+                        }
+                        
+                        const existingMod = imageModifications[currentImageCategory].find(mod => mod.id === imageId);
+                        if (existingMod) {
+                            existingMod.dataUrl = e.target.result;
+                            existingMod.name = file.name;
+                            existingMod.size = file.size;
+                            existingMod.type = file.type;
+                        } else {
+                            imageModifications[currentImageCategory].push({
+                                id: imageId,
+                                dataUrl: e.target.result,
+                                name: file.name,
+                                size: file.size,
+                                type: file.type,
+                                originalPath: image.path
+                            });
+                        }
+                        
+                        saveImageModifications();
+                        renderCurrentCategoryImages();
+                        alert('Image remplacée avec succès !');
+                    }
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        }
+
+        // Prévisualiser une image
+        function previewImage(imageId) {
+            const categoryImages = imageCategories[currentImageCategory] || [];
+            const customImages = imageModifications[currentImageCategory] || [];
+            const allImages = [...categoryImages, ...customImages];
+            const image = allImages.find(img => img.id === imageId);
+            
+            if (image) {
+                const imageUrl = image.dataUrl || image.path;
+                window.open(imageUrl, '_blank');
+            }
+        }
+
+        // Réinitialiser une image
+        function resetImage(imageId) {
+            if (!confirm('Réinitialiser cette image à sa version originale ?')) return;
+            
+            if (imageModifications[currentImageCategory]) {
+                imageModifications[currentImageCategory] = imageModifications[currentImageCategory].filter(mod => mod.id !== imageId);
+                saveImageModifications();
+                renderCurrentCategoryImages();
+                alert('Image réinitialisée !');
+            }
+        }
+
+        // Supprimer une image personnalisée
+        function deleteImage(imageId) {
+            if (!confirm('Supprimer cette image personnalisée ?')) return;
+            
+            if (imageModifications[currentImageCategory]) {
+                imageModifications[currentImageCategory] = imageModifications[currentImageCategory].filter(img => img.id !== imageId);
+                saveImageModifications();
+                renderCurrentCategoryImages();
+                alert('Image supprimée !');
+            }
+        }
+
+        // Configurer les actions globales
+        function setupImageActions() {
+            // Sauvegarder toutes les modifications
+            document.getElementById('saveAllImagesBtn').addEventListener('click', function() {
+                saveImageModifications();
+                alert('Toutes les modifications ont été sauvegardées !');
+            });
+
+            // Réinitialiser toutes les images
+            document.getElementById('resetImagesBtn').addEventListener('click', function() {
+                if (confirm('Réinitialiser toutes les images à leur état original ? Cette action est irréversible.')) {
+                    imageModifications = {};
+                    saveImageModifications();
+                    renderCurrentCategoryImages();
+                    alert('Toutes les images ont été réinitialisées !');
+                }
+            });
+
+            // Exporter la configuration
+            document.getElementById('exportImagesBtn').addEventListener('click', function() {
+                const config = {
+                    modifications: imageModifications,
+                    exportDate: new Date().toISOString(),
+                    version: '1.0'
+                };
+                
+                const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `images-config-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            // Importer une configuration
+            document.getElementById('importImagesBtn').addEventListener('click', function() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const config = JSON.parse(e.target.result);
+                            if (config.modifications) {
+                                imageModifications = config.modifications;
+                                saveImageModifications();
+                                renderCurrentCategoryImages();
+                                alert('Configuration importée avec succès !');
+                            } else {
+                                alert('Format de fichier invalide.');
+                            }
+                        } catch (error) {
+                            alert('Erreur lors de l\'importation du fichier.');
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                input.click();
+            });
+        }
+
+        // Afficher la progression d'upload
+        function showUploadProgress() {
+            const uploadArea = document.getElementById('uploadArea');
+            uploadArea.innerHTML = `
+                <div class="upload-content">
+                    <i class="bi bi-hourglass-split" style="font-size: 3rem; color: #14B789;"></i>
+                    <h5>Upload en cours...</h5>
+                    <div class="progress-bar-custom" style="width: 100%;"></div>
+                </div>
+            `;
+        }
+
+        // Masquer la progression d'upload
+        function hideUploadProgress() {
+            const uploadArea = document.getElementById('uploadArea');
+            uploadArea.innerHTML = `
+                <div class="upload-content">
+                    <i class="bi bi-cloud-upload" style="font-size: 3rem; color: #14B789;"></i>
+                    <h5>Glissez-déposez vos images ici</h5>
+                    <p class="text-muted">ou cliquez pour sélectionner des fichiers</p>
+                    <input type="file" id="imageUpload" multiple accept="image/*" style="display: none;">
+                    <button type="button" class="btn btn-primary" onclick="document.getElementById('imageUpload').click()">
+                        <i class="bi bi-plus-circle"></i> Sélectionner des images
+                    </button>
+                </div>
+            `;
+            setupImageUpload();
+        }
+    </script>
+    <!-- Modal Gestion Boutiques -->
+    <div id="manageBoutiquesModal" class="modal-backdrop-custom" aria-hidden="true">
+        <div class="modal-container-custom" role="dialog" aria-modal="true">
+            <div class="modal-header-custom">
+                <div class="modal-title-custom"><i class="bi bi-gear"></i> Gérer les boutiques</div>
+                <button type="button" class="modal-close-btn" id="closeManageBoutiques">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <div id="boutiquesListContainer"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
