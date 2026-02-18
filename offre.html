@@ -188,7 +188,7 @@
                                 <div class="section-title-wrap d-flex justify-content-center align-items-center mb-4">
                                     <h2 class="ms-4 mb-0"><i class="bi bi-person-plus"></i> Postuler maintenant</h2>
                                 </div>
-                                <form id="applyForm" action="https://script.google.com/macros/s/AKfycbwN9xiBGD-6BZXa8OHWynCQv8BumJVxSpcKAmDMuMBbIW7nFMao8u745qE4_N_P4_w/exec" method="post" class="custom-form" role="form" enctype="multipart/form-data">
+                                <form id="applyForm" action="https://script.google.com/macros/s/AKfycbxTXYH9YIMwe9LyxSkW3ebMRkhKHI52qB_NOkIMX0p_AaV-Ukq1F5nIncUc2FUq5gtZSQ/exec" method="post" class="custom-form" role="form" enctype="multipart/form-data">
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="form-floating">
@@ -407,39 +407,143 @@
                 e.preventDefault();
                 const form = e.target;
                 const url = form.action;
-                const formData = new FormData(form);
                 const submitButton = form.querySelector('button[type="submit"]');
                 const original = submitButton.textContent;
+                const box = document.getElementById('applyMessage');
+
+                function showMsg(type, text) {
+                    if (!box) return;
+                    box.style.display = 'block';
+                    box.className = 'alert ' + (type === 'success' ? 'alert-success' : 'alert-danger');
+                    box.textContent = text;
+                }
+
                 submitButton.textContent = 'Envoi en cours...';
                 submitButton.disabled = true;
 
-                fetch(url, { method: 'POST', body: formData })
-                    .then(function(response) {
-                        if (!response.ok) throw new Error('Erreur serveur');
-                        return response.text();
-                    })
-                    .then(function() {
-                        const box = document.getElementById('applyMessage');
-                        box.style.display = 'block';
-                        box.className = 'alert alert-success';
-                        box.textContent = '✅ Merci ! Votre candidature a été envoyée.';
-                        form.reset();
-                    })
-                    .catch(function(error) {
-                        console.error(error);
-                        const box = document.getElementById('applyMessage');
-                        box.style.display = 'block';
-                        box.className = 'alert alert-danger';
-                        box.textContent = '❌ Une erreur est survenue. Veuillez réessayer.';
-                    })
-                    .finally(function() {
+                // Prépare les données du formulaire et convertit le CV en base64 si présent
+                const fileInput = form.querySelector('#candidate_cv_file');
+                const file = fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+
+                const buildAndSend = (extraFields = {}) => {
+                    const formData = new FormData();
+                    // Ajoute tous les champs texte existants
+                    Array.from(form.elements).forEach(el => {
+                        if (!el.name) return;
+                        if (el.type === 'file') return; // on gère le fichier à part
+                        if ((el.type === 'checkbox' || el.type === 'radio') && !el.checked) return;
+                        formData.append(el.name, el.value);
+                    });
+                    // Ajoute les champs supplémentaires (ex: base64, filename, mimetype)
+                    Object.keys(extraFields).forEach(k => formData.append(k, extraFields[k]));
+
+                    // Helper pour créer des champs cachés en fallback (soumission native)
+                    function appendHiddenFields(obj) {
+                        const created = [];
+                        if (!obj) return created;
+                        Object.keys(obj).forEach(function(key){
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = key;
+                            input.value = obj[key];
+                            form.appendChild(input);
+                            created.push(input);
+                        });
+                        return created;
+                    }
+
+                    fetch(url, { method: 'POST', body: formData, redirect: 'follow' })
+                        .then(async function(response) {
+                            let text = '';
+                            try { text = await response.text(); } catch (e) {}
+                            if (!response.ok) {
+                                const snippet = text ? text.slice(0, 200) : '';
+                                throw new Error('HTTP ' + response.status + (snippet ? ' - ' + snippet : ''));
+                            }
+                            return text;
+                        })
+                        .then(function(text) {
+                            // Tente de lire un JSON { success: true, message: '...' }
+                            var ok = false, msg = '';
+                            try {
+                                var data = JSON.parse(text || '{}');
+                                ok = data && (data.success === true || data.result === 'success');
+                                msg = (data && (data.message || data.msg)) || '';
+                            } catch (e) {}
+                            if (!ok && !text) {
+                                // Certains déploiements retournent une 200 vide: on considère comme OK
+                                ok = true;
+                            }
+                            if (ok) {
+                                showMsg('success', msg || '✅ Merci ! Votre candidature a été envoyée.');
+                                form.reset();
+                            } else {
+                                throw new Error(msg || 'Réponse inattendue du serveur.');
+                            }
+                        })
+                        .catch(async function(error) {
+                            console.error(error);
+                            const msg = (error && error.message) ? String(error.message) : '';
+                            const looksLikeCors = msg.includes('Failed to fetch') || msg.includes('NetworkError') || location.protocol === 'file:';
+
+                            if (looksLikeCors) {
+                                // 1) Retente avec mode: 'no-cors' (on ne pourra pas lire la réponse, mais la requête est envoyée)
+                                try {
+                                    await fetch(url, { method: 'POST', body: formData, mode: 'no-cors' });
+                                    showMsg('success', '✅ Merci ! Votre candidature a été envoyée.');
+                                    form.reset();
+                                    return; // Succès supposé
+                                } catch (e2) {
+                                    console.warn('no-cors fallback failed:', e2);
+                                    // 2) Dernier recours: soumission native du formulaire (navigation)
+                                    try {
+                                        const hiddenInputs = appendHiddenFields(extraFields);
+                                        form.submit();
+                                        // Si la navigation est bloquée, on nettoie les champs cachés plus tard
+                                        setTimeout(function(){ hiddenInputs.forEach(n => n.remove()); }, 5000);
+                                        return;
+                                    } catch (e3) {
+                                        console.error('native submit fallback failed:', e3);
+                                    }
+                                }
+                            }
+
+                            showMsg('error', '❌ Erreur lors de l\'envoi: ' + (msg || 'Une erreur est survenue.'));
+                        })
+                        .finally(function() {
+                            submitButton.textContent = original;
+                            submitButton.disabled = false;
+                            setTimeout(function(){ if (box) box.style.display = 'none'; }, 5000);
+                        });
+                };
+
+                if (file) {
+                    // Optionnel: contrôle de taille (par ex. 10 Mo)
+                    const MAX_MB = 10;
+                    if (file.size > MAX_MB * 1024 * 1024) {
+                        showMsg('error', `❌ Fichier trop volumineux (max ${MAX_MB} Mo).`);
                         submitButton.textContent = original;
                         submitButton.disabled = false;
-                        setTimeout(function(){
-                            const box = document.getElementById('applyMessage');
-                            if (box) box.style.display = 'none';
-                        }, 5000);
-                    });
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        const dataUrl = ev.target.result || '';
+                        const base64 = String(dataUrl).split(',')[1] || '';
+                        buildAndSend({
+                            candidate_cv_base64: base64,
+                            candidate_cv_filename: file.name,
+                            candidate_cv_mimetype: file.type || 'application/octet-stream'
+                        });
+                    };
+                    reader.onerror = function() {
+                        // En cas d’échec de lecture, on envoie sans le fichier
+                        buildAndSend();
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    buildAndSend();
+                }
             });
         });
         </script>
